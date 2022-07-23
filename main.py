@@ -1,6 +1,7 @@
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import *
-from panda3d.physics import *
+from panda3d.bullet import *
+
 
 keyMap = {
     "up" : False,
@@ -8,7 +9,6 @@ keyMap = {
     "left" : False,
     "right" : False
 }
-
 def updateKeyMap(key, state):
     keyMap[key] = state
 
@@ -16,37 +16,35 @@ def updateKeyMap(key, state):
 
 
 class MyApp(ShowBase):
-
     def __init__(self):
         ShowBase.__init__(self)
-        #self.disableMouse()
-        self.enableParticles()
+        # Setup physics world
+        self.world = BulletWorld()
+        self.world.setGravity(Vec3(0, 0, -9.81))
 
-        self.node = NodePath("PhysicsNode")
-        self.node.reparentTo(self.render)
-        self.an = ActorNode("jetpack-guy-physics")
-        self.an.getPhysicsObject().setMass(100)
-        self.anp = self.node.attachNewNode(self.an)
-        self.physicsMgr.attachPhysicalNode(self.an)
+        # Create the ground
+        self.GroundShape = BulletPlaneShape(Vec3(0, 0, 1), 1)
+        self.GroundNode = BulletRigidBodyNode('Ground')
+        self.GroundNode.addShape(self.GroundShape)
+        self.GroundNP = render.attachNewNode(self.GroundNode)
+        self.GroundNP.setPos(0, 0, -1)
+        self.world.attachRigidBody(self.GroundNode)
+        self.GroundModel = self.loader.loadModel("aterrain.egg")
+        self.GroundModel.reparentTo(self.GroundNP)
 
+        # Create a smiley face
+        self.SmileyShape = BulletBoxShape(Vec3(0.5, 0.5, 0.5))
+        self.SmileyNode = BulletRigidBodyNode('Smiley')
+        self.SmileyNode.setMass(1.0)
+        self.SmileyNode.addShape(self.SmileyShape)
+        self.SmileyNP = render.attachNewNode(self.SmileyNode)
+        self.SmileyNP.setPos(-0.002, 0, 2)
+        self.world.attachRigidBody(self.SmileyNode)
+        self.SmileyModel = self.loader.loadModel("models/smiley.egg")
+        self.SmileyModel.setScale(0.5, 0.5, 0.5)
+        self.SmileyModel.reparentTo(self.SmileyNP)
 
-        self.pandaActor = loader.loadModel("models/panda-model")
-        self.pandaActor.reparentTo(self.anp)
-        self.pandaActor.setScale(0.0005, 0.0005, 0.0005)
-        self.pandaActor.reparentTo(self.render)
-        
-        self.gravityFN = ForceNode('world-forces')
-        self.gravityFNP = self.render.attachNewNode(self.gravityFN)
-        self.gravityForce = LinearVectorForce(0,0,-9.81) #gravity acceleration
-        self.gravityFN.addForce(self.gravityForce)
-        self.an.getPhysical(0).addLinearForce(self.gravityForce)
-
-
-        self.scene = self.loader.loadModel("aterrain.egg")
-        self.scene.setScale(0.25, 0.25, 0.25)
-        self.scene.setPos(0, 0, 0)
-        self.scene.reparentTo(self.render)
-
+        # Initiate keyboard event listener
         self.accept("arrow_up", updateKeyMap, ["up", True])
         self.accept("arrow_up-up", updateKeyMap, ["up", False])
     
@@ -54,11 +52,15 @@ class MyApp(ShowBase):
 
     def update(self, task):
         dt = globalClock.getDt()
-        pandaPos = self.pandaActor.getPos()
+
+        self.world.doPhysics(dt)
+
+        # Update smiley face's position
+        SmileyPos = self.SmileyNP.getPos()
         if keyMap["up"]:
-            pandaPos.z += 10 * dt
-        self.pandaActor.setPos(pandaPos)
-        
+            SmileyPos.z += 1
+        self.SmileyNP.setPos(SmileyPos)
+
         return task.cont
 
 
