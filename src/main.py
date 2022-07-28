@@ -34,7 +34,7 @@ class MyApp(ShowBase):
 
 
         # Create the ground
-        self.geomNodes = loader.loadModel("aterrain.egg").findAllMatches('**/+GeomNode')
+        self.geomNodes = loader.loadModel("../assets/aterrain.egg").findAllMatches('**/+GeomNode')
         self.geomNode = self.geomNodes.getPath(0).node()
         self.geom = self.geomNode.getGeom(0)
         
@@ -46,20 +46,23 @@ class MyApp(ShowBase):
         self.GroundNP = render.attachNewNode(self.GroundNode)
         self.GroundNP.setPos(0, 0, -1)
         self.world.attachRigidBody(self.GroundNode)
-        self.GroundModel = self.loader.loadModel("aterrain.egg")
+        self.GroundModel = self.loader.loadModel("../assets/aterrain.egg")
         self.GroundModel.reparentTo(self.GroundNP)
 
         # Create a smiley face
         self.SmileyModel = self.loader.loadModel("models/smiley.egg")
         self.SmileyShape = BulletSphereShape(1)
         self.SmileyNode = BulletRigidBodyNode('Smiley')
-        self.SmileyNode.setMass(1.0)
+        self.SmileyNode.setMass(0.5)
+        self.SmileyNode.setRestitution(0.0001)
         self.SmileyNode.addShape(self.SmileyShape)
         self.SmileyNP = render.attachNewNode(self.SmileyNode)
-        self.SmileyNP.setPos(0, 0, 9)
+        self.SmileyNP.setPos(0, 0, 20)
         self.SmileyNP.setScale(0.1, 0.1, 0.1)
         self.world.attachRigidBody(self.SmileyNode)
         self.SmileyModel.reparentTo(self.SmileyNP)
+        self.SmileyNP.node().setCcdMotionThreshold(1e-3)
+        self.SmileyNP.node().setCcdSweptSphereRadius(0.10)
 
         # Initiate keyboard event listener
         self.accept("f1", updateKeyMap, ["f1", True])
@@ -106,6 +109,12 @@ class MyApp(ShowBase):
             else:
                 self.debugNP.hide()
 
+        result = self.world.contactTestPair(self.SmileyNode, self.GroundNode)
+        
+        if result.getNumContacts() > 0:
+            print("Collision")
+            self.SmileyNode.setLinearVelocity(LVector3(SmileyVel.getX(), SmileyVel.getY(), 10))
+        
 
         return task.cont
 
