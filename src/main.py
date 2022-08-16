@@ -1,29 +1,23 @@
+import sys
+sys.path.append("./headers/")
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import *
 from panda3d.bullet import *
+from Controls import *
+
+
+
+
 loadPrcFile("config_file.prc")
-
-
-keyMap = {
-    "f1" : False,
-    "w" : False,
-    "up" : False,
-    "down" : False,
-    "left" : False,
-    "right" : False,
-    "y" : False,
-    "g" : False,
-    "h" : False,
-    "j" : False
-}
-def updateKeyMap(key, state):
-    keyMap[key] = state
-
 
 
 class MainApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
+        #self.disableMouse()
+        self.RelaxedCamPos = 0
+        self.CamPosResetProgress = 0
+        self.CamPosResetTotal = 0
         # ----------------- Setup Debug Mode -----------------
         self.debugNode = BulletDebugNode('Debug')
         self.debugNode.showWireframe(True)
@@ -42,7 +36,7 @@ class MainApp(ShowBase):
 
         # --------------------Create Models----------------------
 
-        self.ChassisGeomNodes = loader.loadModel("../assets/PorscheChassis.egg").findAllMatches('**/+GeomNode')
+        self.ChassisGeomNodes = self.loader.loadModel("../assets/PorscheChassis.egg").findAllMatches('**/+GeomNode')
         self.ChassisGeomNode = self.ChassisGeomNodes.getPath(0).node()
         self.ChassisGeom = self.ChassisGeomNode.getGeom(0)
         self.ChassisShape = BulletTriangleMesh()
@@ -94,7 +88,7 @@ class MainApp(ShowBase):
                 self.WheelsList[i+4].setChassisConnectionPointCs(Point3(-0.75, -1.15, 0.0))
             self.WheelsList[i+4].setWheelDirectionCs(Vec3(0, 0, -1))
             self.WheelsList[i+4].setWheelAxleCs(Vec3(1, 0, 0))
-            self.WheelsList[i+4].setWheelRadius(0.5)
+            self.WheelsList[i+4].setWheelRadius(0.3305)
             self.WheelsList[i+4].setMaxSuspensionTravelCm(10.0)
             self.WheelsList[i+4].setSuspensionStiffness(40.0)
             self.WheelsList[i+4].setWheelsDampingRelaxation(2.3)
@@ -108,7 +102,7 @@ class MainApp(ShowBase):
 
 
 
-        self.geomNodes = loader.loadModel("../assets/aterrain.egg").findAllMatches('**/+GeomNode')
+        self.geomNodes = self.loader.loadModel("../assets/circuit.egg").findAllMatches('**/+GeomNode')
         self.geomNode = self.geomNodes.getPath(0).node()
         self.geom = self.geomNode.getGeom(0)
         self.GroundMesh = BulletTriangleMesh()
@@ -117,9 +111,9 @@ class MainApp(ShowBase):
         self.GroundNP = render.attachNewNode(BulletRigidBodyNode('Ground'))
         self.GroundNP.setPos(0, 0, -1)
         self.GroundNP.setCollideMask(BitMask32.allOn())
-        self.GroundNP.setScale(3, 3, 3)
+        self.GroundNP.setScale(25, 25, 25)
         self.GroundNP.node().addShape(BulletTriangleMeshShape(self.GroundMesh, dynamic=False))
-        self.loader.loadModel("../assets/aterrain.egg").reparentTo(self.GroundNP)
+        self.loader.loadModel("../assets/circuit.egg").reparentTo(self.GroundNP)
         self.world.attachRigidBody(self.GroundNP.node())
 
 
@@ -129,49 +123,28 @@ class MainApp(ShowBase):
 
 
 
-        self.geomNodes1 = loader.loadModel("models/smiley.egg").findAllMatches('**/+GeomNode')
+        self.geomNodes1 = self.loader.loadModel("../assets/PorscheChassis.egg").findAllMatches('**/+GeomNode')
         self.geomNode1 = self.geomNodes1.getPath(0).node()
         self.geom1 = self.geomNode1.getGeom(0)
         self.GroundMesh1 = BulletTriangleMesh()
         self.GroundMesh1.addGeom(self.geom1)
 
         self.SmileyNP = render.attachNewNode(BulletRigidBodyNode('Smiley'))
-        self.SmileyNP.setPos(0, 0, 20)
-        self.SmileyNP.setCollideMask(BitMask32.allOn())
-        self.SmileyNP.setScale(0.1, 0.1, 0.1)
+        self.SmileyNP.setCollideMask(BitMask32.allOff())
+        self.SmileyNP.setScale(0.5, 0.5, 0.5)
         self.SmileyNP.node().setMass(0.5)
         self.SmileyNP.node().setRestitution(0.0001)
         self.SmileyNP.node().addShape(BulletTriangleMeshShape(self.GroundMesh1, dynamic=True))
         self.SmileyNP.node().setCcdMotionThreshold(1e-3)
         self.SmileyNP.node().setCcdSweptSphereRadius(0.10)
-        self.loader.loadModel("models/smiley.egg").reparentTo(self.SmileyNP)
+        self.loader.loadModel("../assets/PorscheChassis.egg").reparentTo(self.SmileyNP)
         self.world.attachRigidBody(self.SmileyNP.node())
 
 
 
         # --------------------Initiate Keyboard Event Listener------------------------
 
-        self.accept("f1", updateKeyMap, ["f1", True])
-        self.accept("w", updateKeyMap, ["w", True])
-        self.accept("arrow_up", updateKeyMap, ["up", True])
-        self.accept("arrow_down", updateKeyMap, ["down", True])
-        self.accept("arrow_left", updateKeyMap, ["left", True])
-        self.accept("arrow_right", updateKeyMap, ["right", True])
-        self.accept("y", updateKeyMap, ["y", True])
-        self.accept("g", updateKeyMap, ["g", True])
-        self.accept("h", updateKeyMap, ["h", True])
-        self.accept("j", updateKeyMap, ["j", True])
-
-        self.accept("f1-up", updateKeyMap, ["f1", False])
-        self.accept("w-up", updateKeyMap, ["w", False])
-        self.accept("arrow_up-up", updateKeyMap, ["up", False])
-        self.accept("arrow_down-up", updateKeyMap, ["down", False])
-        self.accept("arrow_left-up", updateKeyMap, ["left", False])
-        self.accept("arrow_right-up", updateKeyMap, ["right", False])
-        self.accept("y-up", updateKeyMap, ["y", False])
-        self.accept("g-up", updateKeyMap, ["g", False])
-        self.accept("h-up", updateKeyMap, ["h", False])
-        self.accept("j-up", updateKeyMap, ["j", False]) 
+        Controls.__init__(self)
     
         # ----------------------------Configure Tasks---------------------------------
 
@@ -184,74 +157,59 @@ class MainApp(ShowBase):
 
 
     def update(self, task):
-        dt = globalClock.getDt()
-        self.world.doPhysics(dt)
+        self.dt = globalClock.getDt()
+        self.world.doPhysics(self.dt)
 
-        # --------------------------Setup Keyboard Tasks------------------------------
+        # --------------------------Setup Controls------------------------------
 
-        steering = 0.0
-        steeringClamp = 45.0
-        steeringIncrement = 10000.0
-        engineForce = 0.0
-        brakeForce = 0.0
         SmileyPos = self.ChassisNP.getPos()
         SmileyVel = self.ChassisNP.node().getLinearVelocity()
         SmileyHPR = self.ChassisNP.getHpr()
+        self.steering = 0.0
+        self.steeringClamp = 45.0
+        self.steeringIncrement = 10000.0
+        self.engineForce = 0.0
+        self.brakeForce = 0.0
+
+        Controls.Update(self)
+        self.Vehicle.setSteeringValue(self.steering, 0)
+        self.Vehicle.setSteeringValue(self.steering, 1)
+        self.Vehicle.applyEngineForce(self.engineForce, 2)
+        self.Vehicle.applyEngineForce(self.engineForce, 3)
+        self.Vehicle.setBrake(self.brakeForce, 2)
+        self.Vehicle.setBrake(self.brakeForce, 3)
 
 
+        # -------------------------Update Camera Position and Rotation----------------------------
 
-        if keyMap["w"]:
-            SmileyPos.z = 5
-            SmileyPos.x = -6
-            SmileyPos.y = -8
-            self.ChassisNP.node().setLinearVelocity(LVector3(0, 0, 0))
-            self.ChassisNP.node().setAngularVelocity(LVector3(0, 0, 0))
-            self.ChassisNP.setPos(SmileyPos)
-            self.ChassisNP.setHpr(0, 0, 0)
-            self.SmileyNP.node().setLinearVelocity(LVector3(0, 0, 0))
-            self.SmileyNP.node().setAngularVelocity(LVector3(0, 0, 0))
-            self.SmileyNP.setPos(SmileyPos)
-            self.SmileyNP.setHpr(0, 0, 0)
+        self.camera.setPos( SmileyPos.getX()  +  10 * Truncate(sin((SmileyHPR.getX()+self.RelaxedCamPos)*(pi/180)), 3)  , 
+                            SmileyPos.getY()  -  10 * Truncate(cos((SmileyHPR.getX()+self.RelaxedCamPos)*(pi/180)), 3)  , 
+                            SmileyPos.getZ()  -  10 * Truncate(sin(SmileyHPR.getY()*(pi/180))-0.1, 3)
+        )
 
-        if keyMap["f1"]:
-            if self.debugNP.isHidden():
-                self.debugNP.show()
-            else:
-                self.debugNP.hide()
+        self.camera.setHpr( SmileyHPR.getX()+self.RelaxedCamPos ,
+                            Truncate(SmileyHPR.getY(), 2) ,
+                            0)
 
-        if keyMap["up"]:
-            engineForce = 2000.0
-            brakeForce = 0.0
+
+        #Test : Weird Camera facing when car's Pitch changes
+        #Test : Change two previous functions to be on self.SmileyNP, and uncomment next 5 lines of code
         
-        if keyMap["down"]:
-            engineForce = 0.0
-            brakeForce = 50.0
+        ##self.camera.setPos( SmileyPos.getX() - 50, 
+        ##                    SmileyPos.getY() - 50, 
+        ##                    SmileyPos.getZ())
+        ##
+        ##self.camera.setHpr(-45, 0, 0)
+
+
+
         
-        if keyMap["left"]:
-            steering += dt * steeringIncrement
-            steering = min(steering, steeringClamp)
-        
-        if keyMap["right"]:
-            steering -= dt * steeringIncrement
-            steering = max(steering, -steeringClamp)
-        
-
-
-        self.Vehicle.setSteeringValue(steering, 0)
-        self.Vehicle.setSteeringValue(steering, 1)
-        self.Vehicle.applyEngineForce(engineForce, 2)
-        self.Vehicle.applyEngineForce(engineForce, 3)
-        self.Vehicle.setBrake(brakeForce, 2)
-        self.Vehicle.setBrake(brakeForce, 3)
-
-
-
 
         # -------------------------Create Bouncing Force-------------------------
 
-        result = self.world.contactTestPair(self.SmileyNP.node(), self.GroundNP.node())
-        if result.getNumContacts() > 0:
-            self.SmileyNP.node().setLinearVelocity(LVector3(SmileyVel.getX(), SmileyVel.getY(), 10))
+        #result = self.world.contactTestPair(self.SmileyNP.node(), self.GroundNP.node())
+        #if result.getNumContacts() > 0:
+        #    self.SmileyNP.node().setLinearVelocity(LVector3(SmileyVel.getX(), SmileyVel.getY(), 10))
 
 
 
