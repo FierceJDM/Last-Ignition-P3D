@@ -5,7 +5,10 @@ to finally become what it is now, hoping this time this idea is not gonna deceiv
 
 Title : [Didn't decide yet]
 
-Game Theme : A vehicle-based game where the goal is to fight in a friendly way with another team using planes, cars, 
-(perhaps?) boats, etc... , there will be a lot of game modes (thinking of first-to-the-finish-line races, land-domination, etc...)
+Main Game Theme : A mix of "Racing" and "Adventure" genres. Vehicle-based game set in a open-world (rescaled?) map of the globe.
+
+Game Modes: | Land-Domination inspired from 'Splatoon'.
+            | Paintball-like fight inspired from 'Blur' and 'War Thunder'.
+            | Classic races like any other racing game
 
 Story : [Not currently thinking of any story/career idea; there might not even be any story/career at all]
