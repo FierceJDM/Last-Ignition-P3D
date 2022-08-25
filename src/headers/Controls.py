@@ -1,6 +1,6 @@
 from panda3d.core import *
 from math import *
-from MiscFunctions import *
+from .MiscFunctions import *
 
 keyMap = {
     "f1" : False,

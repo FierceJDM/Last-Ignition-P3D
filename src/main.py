@@ -1,10 +1,7 @@
-import sys
-sys.path.append("./headers/")
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import *
 from panda3d.bullet import *
-from Controls import *
-
+from headers.Controls import *
 
 
 
@@ -36,7 +33,8 @@ class MainApp(ShowBase):
 
         # --------------------Create Models----------------------
 
-        self.ChassisGeomNodes = self.loader.loadModel("../assets/PorscheChassis.egg").findAllMatches('**/+GeomNode')
+        # TODO : reduce tris count by creating a (very) low-poly mesh of the car in Blender
+        self.ChassisGeomNodes = self.loader.loadModel("PorscheChassis.egg").findAllMatches('**/+GeomNode')
         self.ChassisGeomNode = self.ChassisGeomNodes.getPath(0).node()
         self.ChassisGeom = self.ChassisGeomNode.getGeom(0)
         self.ChassisShape = BulletTriangleMesh()
@@ -52,7 +50,7 @@ class MainApp(ShowBase):
         self.ChassisNP.node().setCcdSweptSphereRadius(0.10)
         self.ChassisNP.node().setMass(800.0)
         self.ChassisNP.node().setDeactivationEnabled(False)
-        self.loader.loadModel('../assets/PorscheChassis.egg').reparentTo(self.ChassisNP)
+        self.loader.loadModel('PorscheChassis.egg').reparentTo(self.ChassisNP)
         self.world.attachRigidBody(self.ChassisNP.node())
 
         self.Vehicle = BulletVehicle(self.world, self.ChassisNP.node())
