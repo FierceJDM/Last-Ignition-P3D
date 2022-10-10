@@ -2,6 +2,7 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import *
 from panda3d.bullet import *
 from headers.Controls import *
+from math import *
 
 
 
@@ -12,6 +13,8 @@ class MainApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         #self.disableMouse()
+        self.steering = 0.0
+        self.CamOffset = 0
         self.RelaxedCamPos = 0
         self.CamPosResetProgress = 0
         self.CamPosResetTotal = 0
@@ -33,8 +36,8 @@ class MainApp(ShowBase):
 
         # --------------------Create Models----------------------
 
-        # TODO : reduce tris count by creating a (very) low-poly mesh of the car in Blender
-        self.ChassisGeomNodes = self.loader.loadModel("PorscheChassis.egg").findAllMatches('**/+GeomNode')
+        # TODO : reduce tris count by creating a (very) low-poly collision object of the car in Blender
+        self.ChassisGeomNodes = self.loader.loadModel("../assets/PorscheChassis.egg").findAllMatches('**/+GeomNode')
         self.ChassisGeomNode = self.ChassisGeomNodes.getPath(0).node()
         self.ChassisGeom = self.ChassisGeomNode.getGeom(0)
         self.ChassisShape = BulletTriangleMesh()
@@ -50,7 +53,7 @@ class MainApp(ShowBase):
         self.ChassisNP.node().setCcdSweptSphereRadius(0.10)
         self.ChassisNP.node().setMass(800.0)
         self.ChassisNP.node().setDeactivationEnabled(False)
-        self.loader.loadModel('PorscheChassis.egg').reparentTo(self.ChassisNP)
+        self.loader.loadModel('../assets/PorscheChassis.egg').reparentTo(self.ChassisNP)
         self.world.attachRigidBody(self.ChassisNP.node())
 
         self.Vehicle = BulletVehicle(self.world, self.ChassisNP.node())
@@ -163,9 +166,9 @@ class MainApp(ShowBase):
         SmileyPos = self.ChassisNP.getPos()
         SmileyVel = self.ChassisNP.node().getLinearVelocity()
         SmileyHPR = self.ChassisNP.getHpr()
-        self.steering = 0.0
+
         self.steeringClamp = 45.0
-        self.steeringIncrement = 10000.0
+        self.steeringIncrement = 60.0
         self.engineForce = 0.0
         self.brakeForce = 0.0
 
@@ -180,18 +183,21 @@ class MainApp(ShowBase):
 
         # -------------------------Update Camera Position and Rotation----------------------------
 
-        self.camera.setPos( SmileyPos.getX()  +  10 * Truncate(sin((SmileyHPR.getX()+self.RelaxedCamPos)*(pi/180)), 3)  , 
-                            SmileyPos.getY()  -  10 * Truncate(cos((SmileyHPR.getX()+self.RelaxedCamPos)*(pi/180)), 3)  , 
-                            SmileyPos.getZ()  -  10 * Truncate(sin(SmileyHPR.getY()*(pi/180))-0.1, 3)
+        
+        self.camera.setPos( SmileyPos.getX()  +  10 * Truncate(sin((SmileyHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                            SmileyPos.getY()  -  10 * Truncate(cos((SmileyHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                            SmileyPos.getZ()  -  10 * Truncate(sin(SmileyHPR.getY()*(pi/180))-0.1, 5)
         )
-
-        self.camera.setHpr( SmileyHPR.getX()+self.RelaxedCamPos ,
-                            Truncate(SmileyHPR.getY(), 2) ,
+        self.camera.setHpr( SmileyHPR.getX()+self.CamOffset ,
+                            Truncate(SmileyHPR.getY(), 3) ,
                             0)
 
 
-        #Test : Weird Camera facing when car's Pitch changes
-        #Test : Change two previous functions to be on self.SmileyNP, and uncomment next 5 lines of code
+        print(f"Speed : {Truncate(self.Vehicle.getCurrentSpeedKmHour(), 3)} CamOffset : {Truncate(self.CamOffset, 3)} steering : {self.steering}\n")
+
+
+        #TODO : Fix Weird Camera facing when car's Pitch changes
+        #       Change two previous functions to be on self.SmileyNP, and uncomment next 5 lines of code -> to see how camera behaves from far away
         
         ##self.camera.setPos( SmileyPos.getX() - 50, 
         ##                    SmileyPos.getY() - 50, 
@@ -199,15 +205,7 @@ class MainApp(ShowBase):
         ##
         ##self.camera.setHpr(-45, 0, 0)
 
-
-
-        
-
-        # -------------------------Create Bouncing Force-------------------------
-
-        #result = self.world.contactTestPair(self.SmileyNP.node(), self.GroundNP.node())
-        #if result.getNumContacts() > 0:
-        #    self.SmileyNP.node().setLinearVelocity(LVector3(SmileyVel.getX(), SmileyVel.getY(), 10))
+        #TODO : Remove small car under actual one during load
 
 
 

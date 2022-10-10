@@ -1,5 +1,4 @@
 from panda3d.core import *
-from math import *
 from .MiscFunctions import *
 
 keyMap = {
@@ -48,9 +47,6 @@ class Controls():
         SmileyVel = self.ChassisNP.node().getLinearVelocity()
         SmileyHPR = self.ChassisNP.getHpr()
 
-        self.steering = 0.0
-        self.steeringClamp = 45.0
-        self.steeringIncrement = 10000.0
 
 
         if keyMap["w"]:
@@ -69,62 +65,95 @@ class Controls():
                 self.debugNP.hide()
 
         if keyMap["up"]:
+            # Add Power to Engine
             self.engineForce = 2000.0
             self.brakeForce = 0.0
-        
+        else:
+            # Slowly decrease speed
+            self.brakeForce = 5.0
+            if self.Vehicle.getCurrentSpeedKmHour() < 1:
+                # Force speed to zero
+                self.brakeForce = 50.0
+            
+
+
         if keyMap["down"]:
             self.engineForce = 0.0
             self.brakeForce = 50.0
         
 
         if keyMap["left"]:
-            if self.Vehicle.getCurrentSpeedKmHour() < 0:
-                self.RelaxedCamPos = TranslatePercentage(-(-self.Vehicle.getCurrentSpeedKmHour()/10),
-                                                         15, 
-                                                         self.RelaxedCamPos
-                )
-            else:
-                self.RelaxedCamPos = TranslatePercentage(-(self.Vehicle.getCurrentSpeedKmHour()/10),
-                                                         15, 
-                                                         self.RelaxedCamPos
-                )
-
-            self.CamPosResetTotal = self.RelaxedCamPos
-            self.CamPosResetProgress = 0
             self.steering += self.dt * self.steeringIncrement
             self.steering = min(self.steering, self.steeringClamp)
-        
 
-        elif keyMap["right"]:
-            if self.Vehicle.getCurrentSpeedKmHour() < 0:
-                self.RelaxedCamPos = TranslatePercentage(-self.Vehicle.getCurrentSpeedKmHour()/10,
-                                                         15, 
-                                                         self.RelaxedCamPos
-                )
+
+            if self.Vehicle.getCurrentSpeedKmHour() < 3:
+                if self.CamOffset < 0:
+                    if self.steering < 1.5:
+                        self.CamOffset += 14*self.dt*1/5
+                    else:
+                        self.CamOffset += 14*self.dt*(self.steering/30)
+                if self.CamOffset > 0:
+                    if self.steering < 1.5:
+                        self.CamOffset -= 14*self.dt*1/5
+                    else:
+                        self.CamOffset += 14*self.dt*-(self.steering/30)
             else:
-                self.RelaxedCamPos = TranslatePercentage(self.Vehicle.getCurrentSpeedKmHour()/10,
-                                                         15, 
-                                                         self.RelaxedCamPos
-                )
-            self.CamPosResetTotal = self.RelaxedCamPos
-            self.CamPosResetProgress = 0
-
+                if self.CamOffset > -10:
+                    if self.steering < 0:
+                        self.CamOffset -= 14*self.dt*-(self.steering/30)
+                    else:
+                        self.CamOffset -= 14*self.dt*(self.steering/30)
+        
+        elif keyMap["right"]:
             self.steering -= self.dt * self.steeringIncrement
             self.steering = max(self.steering, -self.steeringClamp)
-        
-        else:
-            if self.RelaxedCamPos < -2:
-                self.CamPosResetProgress = TranslatePercentage(self.dt*-25,
-                                                               -self.CamPosResetTotal, 
-                                                               self.CamPosResetProgress
-                )
-                self.RelaxedCamPos = self.RelaxedCamPos - self.CamPosResetProgress
-            elif self.RelaxedCamPos > 2:
-                self.CamPosResetProgress = TranslatePercentage(self.dt*25, 
-                                                               self.CamPosResetTotal, 
-                                                               self.CamPosResetProgress
-                )
-                self.RelaxedCamPos = self.RelaxedCamPos - self.CamPosResetProgress
+            
+            
+            if self.Vehicle.getCurrentSpeedKmHour() < 3:
+                if self.CamOffset < 0:
+                    if self.steering < 1.5:
+                        self.CamOffset += 14*self.dt*1/5
+                    else:
+                        self.CamOffset += 14*self.dt*(self.steering/30)
+                if self.CamOffset > 0:
+                    if self.steering < 1.5:
+                        self.CamOffset -= 14*self.dt*1/5
+                    else:
+                        self.CamOffset += 14*self.dt*-(self.steering/30)
             else:
-                self.CamPosResetProgress = 0
-                self.RelaxedCamPos = 0
+                if self.CamOffset < 10:
+                    if self.steering < 0:
+                        self.CamOffset += 14*self.dt*-(self.steering/30)
+                    else:
+                        self.CamOffset += 14*self.dt*(self.steering/30)
+
+
+        else:
+            # Bring steering near 0
+            if -0.1 < self.steering < 0.1:
+                self.steering = 0.0
+            elif self.steering < 0:
+                self.steering += self.dt * self.steeringIncrement
+
+            elif self.steering > 0:
+                self.steering -= self.dt * self.steeringIncrement
+            
+            # Bring camoffset near 0
+            if self.CamOffset < 0:
+                if self.steering < 1.5:
+                    self.CamOffset += 14*self.dt*1/5
+                else:
+                    self.CamOffset += 14*self.dt*(self.steering/30)
+            if self.CamOffset > 0:
+                if self.steering < 1.5:
+                    self.CamOffset -= 14*self.dt*1/5
+                else:
+                    self.CamOffset += 14*self.dt*-(self.steering/30)
+
+
+
+
+
+
+        # TODO : Why is camoffset going back to zero faster when it's negative than positive
