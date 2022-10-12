@@ -47,8 +47,6 @@ class Controls():
         SmileyVel = self.ChassisNP.node().getLinearVelocity()
         SmileyHPR = self.ChassisNP.getHpr()
 
-
-
         if keyMap["w"]:
             SmileyPos.z = 5
             SmileyPos.x = -6
@@ -58,102 +56,73 @@ class Controls():
             self.ChassisNP.setPos(SmileyPos)
             self.ChassisNP.setHpr(0, 0, 0)
 
+
         if keyMap["f1"]:
             if self.debugNP.isHidden():
                 self.debugNP.show()
             else:
                 self.debugNP.hide()
 
+
         if keyMap["up"]:
             # Add Power to Engine
             self.engineForce = 2000.0
             self.brakeForce = 0.0
-        else:
-            # Slowly decrease speed
-            self.brakeForce = 5.0
-            if self.Vehicle.getCurrentSpeedKmHour() < 1:
-                # Force speed to zero
-                self.brakeForce = 50.0
             
 
-
         if keyMap["down"]:
-            self.engineForce = 0.0
-            self.brakeForce = 50.0
+            self.engineForce = -1700.0
         
 
         if keyMap["left"]:
-            self.steering += self.dt * self.steeringIncrement
-            self.steering = min(self.steering, self.steeringClamp)
+            self.Steering += self.dt * self.SteeringIncrement
+            self.Steering = min(self.Steering, self.SteeringClamp)
 
-
-            if self.Vehicle.getCurrentSpeedKmHour() < 3:
+            if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
                 if self.CamOffset < 0:
-                    if self.steering < 1.5:
-                        self.CamOffset += 14*self.dt*1/5
-                    else:
-                        self.CamOffset += 14*self.dt*(self.steering/30)
+                    self.CamOffset += 14*self.dt*(6/30)
                 if self.CamOffset > 0:
-                    if self.steering < 1.5:
-                        self.CamOffset -= 14*self.dt*1/5
-                    else:
-                        self.CamOffset += 14*self.dt*-(self.steering/30)
+                    self.CamOffset -= 14*self.dt*(6/30)
             else:
                 if self.CamOffset > -10:
-                    if self.steering < 0:
-                        self.CamOffset -= 14*self.dt*-(self.steering/30)
-                    else:
-                        self.CamOffset -= 14*self.dt*(self.steering/30)
-        
+                    self.CamOffset -= 14*self.dt*(abs(DivByZero(self.Steering, 6))/30)
+    
+
         elif keyMap["right"]:
-            self.steering -= self.dt * self.steeringIncrement
-            self.steering = max(self.steering, -self.steeringClamp)
+            self.Steering -= self.dt * self.SteeringIncrement
+            self.Steering = max(self.Steering, -self.SteeringClamp)
             
-            
-            if self.Vehicle.getCurrentSpeedKmHour() < 3:
+            if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
                 if self.CamOffset < 0:
-                    if self.steering < 1.5:
-                        self.CamOffset += 14*self.dt*1/5
-                    else:
-                        self.CamOffset += 14*self.dt*(self.steering/30)
+                    self.CamOffset += 14*self.dt*(6/30)
                 if self.CamOffset > 0:
-                    if self.steering < 1.5:
-                        self.CamOffset -= 14*self.dt*1/5
-                    else:
-                        self.CamOffset += 14*self.dt*-(self.steering/30)
+                    self.CamOffset -= 14*self.dt*(6/30)
             else:
                 if self.CamOffset < 10:
-                    if self.steering < 0:
-                        self.CamOffset += 14*self.dt*-(self.steering/30)
-                    else:
-                        self.CamOffset += 14*self.dt*(self.steering/30)
+                    self.CamOffset += 14*self.dt*(abs(DivByZero(self.Steering, 6))/30)
 
 
         else:
-            # Bring steering near 0
-            if -0.1 < self.steering < 0.1:
-                self.steering = 0.0
-            elif self.steering < 0:
-                self.steering += self.dt * self.steeringIncrement
-
-            elif self.steering > 0:
-                self.steering -= self.dt * self.steeringIncrement
+            # Bring Steering near 0
+            if -0.1 < self.Steering < 0.1:
+                self.Steering = 0.0
+            elif self.Steering < 0:
+                self.Steering += self.dt * self.SteeringIncrement
+            elif self.Steering > 0:
+                self.Steering -= self.dt * self.SteeringIncrement
             
-            # Bring camoffset near 0
+            #Bring camoffset near 0
             if self.CamOffset < 0:
-                if self.steering < 1.5:
-                    self.CamOffset += 14*self.dt*1/5
-                else:
-                    self.CamOffset += 14*self.dt*(self.steering/30)
+                self.CamOffset += 14*self.dt*(abs(DivByZero(self.Steering, 6))/30)
+            
             if self.CamOffset > 0:
-                if self.steering < 1.5:
-                    self.CamOffset -= 14*self.dt*1/5
-                else:
-                    self.CamOffset += 14*self.dt*-(self.steering/30)
+                self.CamOffset -= 14*self.dt*(abs(DivByZero(self.Steering, 6))/30)
 
 
 
 
 
 
-        # TODO : Why is camoffset going back to zero faster when it's negative than positive
+
+# TODO : Tweak values of Camera dynamics and add dynamics for Yaw rotation.
+# TODO : Decrease Steering power and speed when Speed gets higher.

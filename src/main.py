@@ -13,11 +13,8 @@ class MainApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         #self.disableMouse()
-        self.steering = 0.0
+        self.Steering = 0.0
         self.CamOffset = 0
-        self.RelaxedCamPos = 0
-        self.CamPosResetProgress = 0
-        self.CamPosResetTotal = 0
         # ----------------- Setup Debug Mode -----------------
         self.debugNode = BulletDebugNode('Debug')
         self.debugNode.showWireframe(True)
@@ -167,14 +164,14 @@ class MainApp(ShowBase):
         SmileyVel = self.ChassisNP.node().getLinearVelocity()
         SmileyHPR = self.ChassisNP.getHpr()
 
-        self.steeringClamp = 45.0
-        self.steeringIncrement = 60.0
+        self.SteeringClamp = 45.0
+        self.SteeringIncrement = 60.0
         self.engineForce = 0.0
         self.brakeForce = 0.0
 
         Controls.Update(self)
-        self.Vehicle.setSteeringValue(self.steering, 0)
-        self.Vehicle.setSteeringValue(self.steering, 1)
+        self.Vehicle.setSteeringValue(self.Steering, 0)
+        self.Vehicle.setSteeringValue(self.Steering, 1)
         self.Vehicle.applyEngineForce(self.engineForce, 2)
         self.Vehicle.applyEngineForce(self.engineForce, 3)
         self.Vehicle.setBrake(self.brakeForce, 2)
@@ -193,10 +190,10 @@ class MainApp(ShowBase):
                             0)
 
 
-        print(f"Speed : {Truncate(self.Vehicle.getCurrentSpeedKmHour(), 3)} CamOffset : {Truncate(self.CamOffset, 3)} steering : {self.steering}\n")
 
 
-        #TODO : Fix Weird Camera facing when car's Pitch changes
+
+        # TODO : Fix Weird Camera facing when car's Pitch (or Yaw? yeah i think it's Yaw) changes
         #       Change two previous functions to be on self.SmileyNP, and uncomment next 5 lines of code -> to see how camera behaves from far away
         
         ##self.camera.setPos( SmileyPos.getX() - 50, 
@@ -205,9 +202,8 @@ class MainApp(ShowBase):
         ##
         ##self.camera.setHpr(-45, 0, 0)
 
-        #TODO : Remove small car under actual one during load
-
-
+        # TODO : Remove small car under actual one during load
+        # TODO : Add UI
 
         return task.cont
 
