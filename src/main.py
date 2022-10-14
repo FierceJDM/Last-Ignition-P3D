@@ -165,7 +165,7 @@ class MainApp(ShowBase):
         SmileyHPR = self.ChassisNP.getHpr()
 
         self.SteeringClamp = 45.0
-        self.SteeringIncrement = 60.0
+        self.SteeringIncrement = 30.0
         self.engineForce = 0.0
         self.brakeForce = 0.0
 
@@ -181,29 +181,30 @@ class MainApp(ShowBase):
         # -------------------------Update Camera Position and Rotation----------------------------
 
         
-        self.camera.setPos( SmileyPos.getX()  +  10 * Truncate(sin((SmileyHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                            SmileyPos.getY()  -  10 * Truncate(cos((SmileyHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                            SmileyPos.getZ()  -  10 * Truncate(sin(SmileyHPR.getY()*(pi/180))-0.1, 5)
+        self.camera.setPos( SmileyPos.getX()  +  7.6 * Truncate(sin((SmileyHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                            SmileyPos.getY()  -  7.6 * Truncate(cos((SmileyHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                            SmileyPos.getZ()  -  1.4 * Truncate(sin(SmileyHPR.getY()*(pi/180)), 5)+0.9
         )
         self.camera.setHpr( SmileyHPR.getX()+self.CamOffset ,
-                            Truncate(SmileyHPR.getY(), 3) ,
+                            0 ,
                             0)
 
 
 
 
 
-        # TODO : Fix Weird Camera facing when car's Pitch (or Yaw? yeah i think it's Yaw) changes
-        #       Change two previous functions to be on self.SmileyNP, and uncomment next 5 lines of code -> to see how camera behaves from far away
         
-        ##self.camera.setPos( SmileyPos.getX() - 50, 
-        ##                    SmileyPos.getY() - 50, 
-        ##                    SmileyPos.getZ())
-        ##
-        ##self.camera.setHpr(-45, 0, 0)
+        #Change 2 previous functions to be on self.SmileyNP, and uncomment 2 next functions of code -> to see how camera behaves from far away
+        
+        #self.camera.setPos( SmileyPos.getX() - 5, 
+        #                    SmileyPos.getY() - 5, 
+        #                    SmileyPos.getZ())
+        #
+        #self.camera.setHpr(-45, 0, 0)
 
         # TODO : Remove small car under actual one during load
         # TODO : Add UI
+        # TODO : Change Project Name (bruh)
 
         return task.cont
 
