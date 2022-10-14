@@ -1,7 +1,7 @@
 from panda3d.core import *
 from .MiscFunctions import *
 
-keyMap = {
+KeyMap = {
     "f1" : False,
     "w" : False,
     "up" : False,
@@ -13,41 +13,42 @@ keyMap = {
     "h" : False,
     "j" : False
 }
-def updateKeyMap(key, state):
-    keyMap[key] = state
+
+def UpdateKeyMap(key, state):
+    KeyMap[key] = state
 
 class Controls():
     def __init__(self):
 
 
-        self.accept("f1", updateKeyMap, ["f1", True])
-        self.accept("w", updateKeyMap, ["w", True])
-        self.accept("arrow_up", updateKeyMap, ["up", True])
-        self.accept("arrow_down", updateKeyMap, ["down", True])
-        self.accept("arrow_left", updateKeyMap, ["left", True])
-        self.accept("arrow_right", updateKeyMap, ["right", True])
-        self.accept("y", updateKeyMap, ["y", True])
-        self.accept("g", updateKeyMap, ["g", True])
-        self.accept("h", updateKeyMap, ["h", True])
-        self.accept("j", updateKeyMap, ["j", True])
+        self.accept("f1", UpdateKeyMap, ["f1", True])
+        self.accept("w", UpdateKeyMap, ["w", True])
+        self.accept("arrow_up", UpdateKeyMap, ["up", True])
+        self.accept("arrow_down", UpdateKeyMap, ["down", True])
+        self.accept("arrow_left", UpdateKeyMap, ["left", True])
+        self.accept("arrow_right", UpdateKeyMap, ["right", True])
+        self.accept("y", UpdateKeyMap, ["y", True])
+        self.accept("g", UpdateKeyMap, ["g", True])
+        self.accept("h", UpdateKeyMap, ["h", True])
+        self.accept("j", UpdateKeyMap, ["j", True])
 
-        self.accept("f1-up", updateKeyMap, ["f1", False])
-        self.accept("w-up", updateKeyMap, ["w", False])
-        self.accept("arrow_up-up", updateKeyMap, ["up", False])
-        self.accept("arrow_down-up", updateKeyMap, ["down", False])
-        self.accept("arrow_left-up", updateKeyMap, ["left", False])
-        self.accept("arrow_right-up", updateKeyMap, ["right", False])
-        self.accept("y-up", updateKeyMap, ["y", False])
-        self.accept("g-up", updateKeyMap, ["g", False])
-        self.accept("h-up", updateKeyMap, ["h", False])
-        self.accept("j-up", updateKeyMap, ["j", False])
+        self.accept("f1-up", UpdateKeyMap, ["f1", False])
+        self.accept("w-up", UpdateKeyMap, ["w", False])
+        self.accept("arrow_up-up", UpdateKeyMap, ["up", False])
+        self.accept("arrow_down-up", UpdateKeyMap, ["down", False])
+        self.accept("arrow_left-up", UpdateKeyMap, ["left", False])
+        self.accept("arrow_right-up", UpdateKeyMap, ["right", False])
+        self.accept("y-up", UpdateKeyMap, ["y", False])
+        self.accept("g-up", UpdateKeyMap, ["g", False])
+        self.accept("h-up", UpdateKeyMap, ["h", False])
+        self.accept("j-up", UpdateKeyMap, ["j", False])
 
     def Update(self):
         SmileyPos = self.ChassisNP.getPos()
         SmileyVel = self.ChassisNP.node().getLinearVelocity()
         SmileyHPR = self.ChassisNP.getHpr()
 
-        if keyMap["w"]:
+        if KeyMap["w"]:
             SmileyPos.z = 5
             SmileyPos.x = -6
             SmileyPos.y = -8
@@ -57,66 +58,71 @@ class Controls():
             self.ChassisNP.setHpr(0, 0, 0)
 
 
-        if keyMap["f1"]:
+        if KeyMap["f1"]:
             if self.debugNP.isHidden():
                 self.debugNP.show()
             else:
                 self.debugNP.hide()
 
 
-        if keyMap["up"]:
+        if KeyMap["up"]:
             # Add Power to Engine
             self.engineForce = 2000.0
             self.brakeForce = 0.0
             
 
-        if keyMap["down"]:
+        elif KeyMap["down"]:
             self.engineForce = -1700.0
+            self.brakeForce = 0.0
         
 
-        if keyMap["left"]:
+        else:
+            self.brakeForce = 5
+
+
+        if KeyMap["left"]:
             self.Steering += self.dt * self.SteeringIncrement
             self.Steering = min(self.Steering, self.SteeringClamp)
 
             if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
                 if self.CamOffset < 0:
-                    self.CamOffset += 14*self.dt*(6/30)
+                    self.CamOffset += 25*self.dt*(15/30)
                 if self.CamOffset > 0:
-                    self.CamOffset -= 14*self.dt*(6/30)
+                    self.CamOffset -= 25*self.dt*(15/30)
             else:
-                if self.CamOffset > -10:
-                    self.CamOffset -= 14*self.dt*(abs(DivByZero(self.Steering, 6))/30)
+                if self.CamOffset > -19:
+                    self.CamOffset -= 25*self.dt*(abs(DivByZero(self.Steering, 13))/30)
     
 
-        elif keyMap["right"]:
+        elif KeyMap["right"]:
             self.Steering -= self.dt * self.SteeringIncrement
             self.Steering = max(self.Steering, -self.SteeringClamp)
             
             if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
                 if self.CamOffset < 0:
-                    self.CamOffset += 14*self.dt*(6/30)
+                    self.CamOffset += 25*self.dt*(15/30)
                 if self.CamOffset > 0:
-                    self.CamOffset -= 14*self.dt*(6/30)
+                    self.CamOffset -= 25*self.dt*(15/30)
             else:
-                if self.CamOffset < 10:
-                    self.CamOffset += 14*self.dt*(abs(DivByZero(self.Steering, 6))/30)
+                if self.CamOffset < 19:
+                    self.CamOffset += 25*self.dt*(abs(DivByZero(self.Steering, 13))/30)
 
 
         else:
             # Bring Steering near 0
-            if -0.1 < self.Steering < 0.1:
+            if -5 < self.Steering < 5:
                 self.Steering = 0.0
             elif self.Steering < 0:
-                self.Steering += self.dt * self.SteeringIncrement
+                self.Steering += self.dt * 60
             elif self.Steering > 0:
-                self.Steering -= self.dt * self.SteeringIncrement
+                self.Steering -= self.dt * 60
             
             #Bring camoffset near 0
             if self.CamOffset < 0:
-                self.CamOffset += 14*self.dt*(abs(DivByZero(self.Steering, 6))/30)
+                self.CamOffset += 25*self.dt*(abs(DivByZero(self.Steering, 13))/30)
             
             if self.CamOffset > 0:
-                self.CamOffset -= 14*self.dt*(abs(DivByZero(self.Steering, 6))/30)
+                self.CamOffset -= 25*self.dt*(abs(DivByZero(self.Steering, 13))/30)
 
 
 
@@ -124,5 +130,4 @@ class Controls():
 
 
 
-# TODO : Tweak values of Camera dynamics and add dynamics for Yaw rotation.
 # TODO : Decrease Steering power and speed when Speed gets higher.
