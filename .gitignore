@@ -4,3 +4,4 @@
 setup.py
 requirements.txt
 run_game.sh
+/src/headers/__pycache__
