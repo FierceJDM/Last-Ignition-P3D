@@ -81,7 +81,7 @@ class Controls():
 
 
         if KeyMap["left"]:
-            self.Steering += self.dt * self.SteeringIncrement
+            self.Steering += self.dt * (self.SteeringIncrement+10)
             self.Steering = min(self.Steering, self.SteeringClamp)
 
             if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
@@ -95,7 +95,7 @@ class Controls():
     
 
         elif KeyMap["right"]:
-            self.Steering -= self.dt * self.SteeringIncrement
+            self.Steering -= self.dt * (self.SteeringIncrement+10)
             self.Steering = max(self.Steering, -self.SteeringClamp)
             
             if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
@@ -129,5 +129,5 @@ class Controls():
 
 
 
-
-# TODO : Decrease Steering power and speed when Speed gets higher.
+# TODO : Make CamOffset end-of-movements less firm (i.e. firm stop when CamOffset gets to 0)
+# TODO : Decrease Steering power when Speed gets higher.
