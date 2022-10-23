@@ -34,13 +34,13 @@ class MainApp(ShowBase):
         # --------------------Create Models----------------------
 
         # TODO : reduce tris count by creating a (very) low-poly collision object of the car in Blender
-        self.ChassisGeomNodes = self.loader.loadModel("../assets/PorscheChassis.egg").findAllMatches('**/+GeomNode')
+        self.ChassisGeomNodes = self.loader.loadModel("../assets/untitled.bam").findAllMatches('**/+GeomNode')
         self.ChassisGeomNode = self.ChassisGeomNodes.getPath(0).node()
         self.ChassisGeom = self.ChassisGeomNode.getGeom(0)
         self.ChassisShape = BulletTriangleMesh()
         self.ChassisShape.addGeom(self.ChassisGeom)
         self.ChassisTS = TransformState.makePos(Point3(0, 0, 0))
-        self.ChassisTS = self.ChassisTS.setHpr(Point3(-90, 90, 90))
+        self.ChassisTS = self.ChassisTS.setHpr(Point3(0, 0, 0))
         
         self.ChassisNP = render.attachNewNode(BulletRigidBodyNode('Vehicle'))
         self.ChassisNP.setPos(0, 0, 1)
@@ -109,7 +109,7 @@ class MainApp(ShowBase):
         self.GroundNP = render.attachNewNode(BulletRigidBodyNode('Ground'))
         self.GroundNP.setPos(0, 0, -1)
         self.GroundNP.setCollideMask(BitMask32.allOn())
-        self.GroundNP.setScale(25, 25, 25)
+        self.GroundNP.setScale(1, 1, 1)
         self.GroundNP.node().addShape(BulletTriangleMeshShape(self.GroundMesh, dynamic=False))
         self.loader.loadModel("../assets/circuit.egg").reparentTo(self.GroundNP)
         self.world.attachRigidBody(self.GroundNP.node())
@@ -119,24 +119,24 @@ class MainApp(ShowBase):
 
 
 
+        #The Following code snippet was an object supposed to take the camera's position to see how the camera was behaving
 
+        #self.geomNodes1 = self.loader.loadModel("../assets/PorscheChassis.egg").findAllMatches('**/+GeomNode')
+        #self.geomNode1 = self.geomNodes1.getPath(0).node()
+        #self.geom1 = self.geomNode1.getGeom(0)
+        #self.GroundMesh1 = BulletTriangleMesh()
+        #self.GroundMesh1.addGeom(self.geom1)
 
-        self.geomNodes1 = self.loader.loadModel("../assets/PorscheChassis.egg").findAllMatches('**/+GeomNode')
-        self.geomNode1 = self.geomNodes1.getPath(0).node()
-        self.geom1 = self.geomNode1.getGeom(0)
-        self.GroundMesh1 = BulletTriangleMesh()
-        self.GroundMesh1.addGeom(self.geom1)
-
-        self.SmileyNP = render.attachNewNode(BulletRigidBodyNode('Smiley'))
-        self.SmileyNP.setCollideMask(BitMask32.allOff())
-        self.SmileyNP.setScale(0.5, 0.5, 0.5)
-        self.SmileyNP.node().setMass(0.5)
-        self.SmileyNP.node().setRestitution(0.0001)
-        self.SmileyNP.node().addShape(BulletTriangleMeshShape(self.GroundMesh1, dynamic=True))
-        self.SmileyNP.node().setCcdMotionThreshold(1e-3)
-        self.SmileyNP.node().setCcdSweptSphereRadius(0.10)
-        self.loader.loadModel("../assets/PorscheChassis.egg").reparentTo(self.SmileyNP)
-        self.world.attachRigidBody(self.SmileyNP.node())
+        #self.SmileyNP = render.attachNewNode(BulletRigidBodyNode('Smiley'))
+        #self.SmileyNP.setCollideMask(BitMask32.allOff())
+        #self.SmileyNP.setScale(0.5, 0.5, 0.5)
+        #self.SmileyNP.node().setMass(0.5)
+        #self.SmileyNP.node().setRestitution(0.0001)
+        #self.SmileyNP.node().addShape(BulletTriangleMeshShape(self.GroundMesh1, dynamic=True))
+        #self.SmileyNP.node().setCcdMotionThreshold(1e-3)
+        #self.SmileyNP.node().setCcdSweptSphereRadius(0.10)
+        #self.loader.loadModel("../assets/PorscheChassis.egg").reparentTo(self.SmileyNP)
+        #self.world.attachRigidBody(self.SmileyNP.node())
 
 
 
@@ -164,7 +164,7 @@ class MainApp(ShowBase):
         SmileyVel = self.ChassisNP.node().getLinearVelocity()
         SmileyHPR = self.ChassisNP.getHpr()
 
-        self.SteeringClamp = 45.0
+        self.SteeringClamp = 35.0
         self.SteeringIncrement = 30.0
         self.engineForce = 0.0
         self.brakeForce = 0.0
@@ -202,7 +202,6 @@ class MainApp(ShowBase):
         #
         #self.camera.setHpr(-45, 0, 0)
 
-        # TODO : Remove small car under actual one during load
         # TODO : Add UI
         # TODO : Change Project Name (bruh)
 
