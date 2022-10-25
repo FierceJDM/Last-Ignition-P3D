@@ -129,5 +129,5 @@ class Controls():
 
 
 
-# TODO : Make CamOffset end-of-movements less firm (i.e. firm stop when CamOffset gets to 0)
+# TODO : Make CamOffset end-of-movements less firm (firm stop when CamOffset gets to 0)
 # TODO : Decrease Steering power when Speed gets higher.

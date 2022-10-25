@@ -33,7 +33,6 @@ class MainApp(ShowBase):
 
         # --------------------Create Models----------------------
 
-        # TODO : reduce tris count by creating a (very) low-poly collision object of the car in Blender
         self.ChassisGeomNodes = self.loader.loadModel("../assets/untitled.bam").findAllMatches('**/+GeomNode')
         self.ChassisGeomNode = self.ChassisGeomNodes.getPath(0).node()
         self.ChassisGeom = self.ChassisGeomNode.getGeom(0)
@@ -203,7 +202,7 @@ class MainApp(ShowBase):
         #self.camera.setHpr(-45, 0, 0)
 
         # TODO : Add UI
-        # TODO : Change Project Name (bruh)
+        # TODO : Change Project Name (bruh) (The Last Ignition)
 
         return task.cont
 
