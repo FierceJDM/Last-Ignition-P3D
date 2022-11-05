@@ -1,5 +1,6 @@
 from panda3d.core import *
-from .MiscFunctions import *
+from .Camera import *
+from .Steering import *
 
 KeyMap = {
     "f1" : False,
@@ -19,7 +20,7 @@ def UpdateKeyMap(key, state):
 
 class Controls():
     def __init__(self):
-
+        self.Steering = 0.0
 
         self.accept("f1", UpdateKeyMap, ["f1", True])
         self.accept("w", UpdateKeyMap, ["w", True])
@@ -44,72 +45,51 @@ class Controls():
         self.accept("j-up", UpdateKeyMap, ["j", False])
 
     def Update(self):
-        SmileyPos = self.ChassisNP.getPos()
-        SmileyVel = self.ChassisNP.node().getLinearVelocity()
-        SmileyHPR = self.ChassisNP.getHpr()
+        ChassisPos = self.ChassisNP.getPos()
 
-        if KeyMap["w"]:
-            SmileyPos.z = 5
-            SmileyPos.x = -6
-            SmileyPos.y = -8
+        if KeyMap["w"]: # Respawn
+            ChassisPos.z = 5
+            ChassisPos.x = -6
+            ChassisPos.y = -8
             self.ChassisNP.node().setLinearVelocity(Point3(0, 0, 0))
             self.ChassisNP.node().setAngularVelocity(Point3(0, 0, 0))
-            self.ChassisNP.setPos(SmileyPos)
+            self.ChassisNP.setPos(ChassisPos)
             self.ChassisNP.setHpr(0, 0, 0)
 
 
-        if KeyMap["f1"]:
+        if KeyMap["f1"]: # Debug Mode
             if self.debugNP.isHidden():
                 self.debugNP.show()
             else:
                 self.debugNP.hide()
 
 
-        if KeyMap["up"]:
-            # Add Power to Engine
+        if KeyMap["up"]: # Forward
             self.engineForce = 2000.0
             self.brakeForce = 0.0
-            
-
-        elif KeyMap["down"]:
+        elif KeyMap["down"]: # Backward
             self.engineForce = -1700.0
             self.brakeForce = 0.0
-        
-
         else:
             self.brakeForce = 5
 
-
         if KeyMap["left"]:
-            self.Steering += self.dt * (self.SteeringIncrement+10)
-            self.Steering = min(self.Steering, self.SteeringClamp)
+            Steer.Left(self)
 
             if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
-                if self.CamOffset < 0:
-                    self.CamOffset += 25*self.dt*(15/30)
-                if self.CamOffset > 0:
-                    self.CamOffset -= 25*self.dt*(15/30)
+                Camera.FirstPerson.Zero(self, True)
             else:
-                if self.CamOffset > -19:
-                    self.CamOffset -= 25*self.dt*(abs(DivByZero(self.Steering, 13))/30)
+                Camera.FirstPerson.Turn(self, -19)
     
-
         elif KeyMap["right"]:
-            self.Steering -= self.dt * (self.SteeringIncrement+10)
-            self.Steering = max(self.Steering, -self.SteeringClamp)
+            Steer.Right(self)
             
             if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
-                if self.CamOffset < 0:
-                    self.CamOffset += 25*self.dt*(15/30)
-                if self.CamOffset > 0:
-                    self.CamOffset -= 25*self.dt*(15/30)
+                Camera.FirstPerson.Zero(self, True)
             else:
-                if self.CamOffset < 19:
-                    self.CamOffset += 25*self.dt*(abs(DivByZero(self.Steering, 13))/30)
+                Camera.FirstPerson.Turn(self, 19)
 
-
-        else:
-            # Bring Steering near 0
+        else: # Bring values to Zero
             if -5 < self.Steering < 5:
                 self.Steering = 0.0
             elif self.Steering < 0:
@@ -117,17 +97,11 @@ class Controls():
             elif self.Steering > 0:
                 self.Steering -= self.dt * 60
             
-            #Bring camoffset near 0
-            if self.CamOffset < 0:
-                self.CamOffset += 25*self.dt*(abs(DivByZero(self.Steering, 13))/30)
-            
-            if self.CamOffset > 0:
-                self.CamOffset -= 25*self.dt*(abs(DivByZero(self.Steering, 13))/30)
+            Camera.FirstPerson.Zero(self, False)
 
 
 
 
 
 
-# TODO : Make CamOffset end-of-movements less firm (firm stop when CamOffset gets to 0)
-# TODO : Decrease Steering power when Speed gets higher.
+# TODO : Decrease Steering power when Speed gets higher. (Tweak values)

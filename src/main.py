@@ -2,6 +2,7 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import *
 from panda3d.bullet import *
 from headers.Controls import *
+from headers.Camera import *
 from math import *
 
 
@@ -13,8 +14,6 @@ class MainApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         #self.disableMouse()
-        self.Steering = 0.0
-        self.CamOffset = 0
         # ----------------- Setup Debug Mode -----------------
         self.debugNode = BulletDebugNode('Debug')
         self.debugNode.showWireframe(True)
@@ -114,35 +113,10 @@ class MainApp(ShowBase):
         self.world.attachRigidBody(self.GroundNP.node())
 
 
-
-
-
-
-        #The Following code snippet was an object supposed to take the camera's position to see how the camera was behaving
-
-        #self.geomNodes1 = self.loader.loadModel("../assets/PorscheChassis.egg").findAllMatches('**/+GeomNode')
-        #self.geomNode1 = self.geomNodes1.getPath(0).node()
-        #self.geom1 = self.geomNode1.getGeom(0)
-        #self.GroundMesh1 = BulletTriangleMesh()
-        #self.GroundMesh1.addGeom(self.geom1)
-
-        #self.SmileyNP = render.attachNewNode(BulletRigidBodyNode('Smiley'))
-        #self.SmileyNP.setCollideMask(BitMask32.allOff())
-        #self.SmileyNP.setScale(0.5, 0.5, 0.5)
-        #self.SmileyNP.node().setMass(0.5)
-        #self.SmileyNP.node().setRestitution(0.0001)
-        #self.SmileyNP.node().addShape(BulletTriangleMeshShape(self.GroundMesh1, dynamic=True))
-        #self.SmileyNP.node().setCcdMotionThreshold(1e-3)
-        #self.SmileyNP.node().setCcdSweptSphereRadius(0.10)
-        #self.loader.loadModel("../assets/PorscheChassis.egg").reparentTo(self.SmileyNP)
-        #self.world.attachRigidBody(self.SmileyNP.node())
-
-
-
         # --------------------Initiate Keyboard Event Listener------------------------
 
         Controls.__init__(self)
-    
+        Camera.__init__(self)
         # ----------------------------Configure Tasks---------------------------------
 
         self.taskMgr.add(self.update, "update")
@@ -159,12 +133,11 @@ class MainApp(ShowBase):
 
         # --------------------------Setup Controls------------------------------
 
-        SmileyPos = self.ChassisNP.getPos()
-        SmileyVel = self.ChassisNP.node().getLinearVelocity()
-        SmileyHPR = self.ChassisNP.getHpr()
+        ChassisPos = self.ChassisNP.getPos()
+        ChassisHPR = self.ChassisNP.getHpr()
 
         self.SteeringClamp = 35.0
-        self.SteeringIncrement = 30.0
+        self.SteeringIncrement = 40.0
         self.engineForce = 0.0
         self.brakeForce = 0.0
 
@@ -180,29 +153,13 @@ class MainApp(ShowBase):
         # -------------------------Update Camera Position and Rotation----------------------------
 
         
-        self.camera.setPos( SmileyPos.getX()  +  7.6 * Truncate(sin((SmileyHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                            SmileyPos.getY()  -  7.6 * Truncate(cos((SmileyHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                            SmileyPos.getZ()  -  1.4 * Truncate(sin(SmileyHPR.getY()*(pi/180)), 5)+0.9
+        self.camera.setPos( ChassisPos.getX()  +  7.6 * Truncate(sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                            ChassisPos.getY()  -  7.6 * Truncate(cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                            ChassisPos.getZ()  -  1.4 * Truncate(sin(ChassisHPR.getY()*(pi/180)), 5)+0.9
         )
-        self.camera.setHpr( SmileyHPR.getX()+self.CamOffset ,
+        self.camera.setHpr( ChassisHPR.getX()+self.CamOffset ,
                             0 ,
                             0)
-
-
-
-
-
-        
-        #Change 2 previous functions to be on self.SmileyNP, and uncomment 2 next functions of code -> to see how camera behaves from far away
-        
-        #self.camera.setPos( SmileyPos.getX() - 5, 
-        #                    SmileyPos.getY() - 5, 
-        #                    SmileyPos.getZ())
-        #
-        #self.camera.setHpr(-45, 0, 0)
-
-        # TODO : Add UI
-        # TODO : Change Project Name (bruh) (The Last Ignition)
 
         return task.cont
 
@@ -212,3 +169,8 @@ class MainApp(ShowBase):
 
 app = MainApp()
 app.run()
+
+
+
+
+# TODO : Add UI
