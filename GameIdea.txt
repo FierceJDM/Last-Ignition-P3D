@@ -1,9 +1,9 @@
 Changed the main game theme 3 times now.
-(Started of as a Dinosaur-hunting game idea, then somehow evolved into a massive war between player and iron monsters, 
+(Started off as a Dinosaur-hunting game idea, then somehow evolved into a massive war between player and iron monsters, 
 to finally become what it is now, hoping this time this idea is not gonna deceive me)
 
 
-Title : [Didn't decide yet]
+Title : Last Ignition
 
 Main Game Theme : A mix of "Racing" and "Adventure" genres. Vehicle-based game set in a open-world (rescaled?) map of the globe (like The Crew 2)
 
