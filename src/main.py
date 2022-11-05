@@ -46,7 +46,7 @@ class MainApp(ShowBase):
         self.ChassisNP.node().addShape(BulletTriangleMeshShape(self.ChassisShape, dynamic=True), self.ChassisTS)
         self.ChassisNP.node().setCcdMotionThreshold(1e-3)
         self.ChassisNP.node().setCcdSweptSphereRadius(0.10)
-        self.ChassisNP.node().setMass(800.0)
+        self.ChassisNP.node().setMass(1500.0)
         self.ChassisNP.node().setDeactivationEnabled(False)
         self.loader.loadModel('../assets/PorscheChassis.egg').reparentTo(self.ChassisNP)
         self.world.attachRigidBody(self.ChassisNP.node())

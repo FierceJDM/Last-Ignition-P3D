@@ -21,6 +21,7 @@ def UpdateKeyMap(key, state):
 class Controls():
     def __init__(self):
         self.Steering = 0.0
+        self.SteerLimit = 0.0
 
         self.accept("f1", UpdateKeyMap, ["f1", True])
         self.accept("w", UpdateKeyMap, ["w", True])
@@ -79,7 +80,7 @@ class Controls():
             if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
                 Camera.FirstPerson.Zero(self, True)
             else:
-                Camera.FirstPerson.Turn(self, -19)
+                Camera.FirstPerson.Turn(self, self.SteerLimit)
     
         elif KeyMap["right"]:
             Steer.Right(self)
@@ -87,7 +88,7 @@ class Controls():
             if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
                 Camera.FirstPerson.Zero(self, True)
             else:
-                Camera.FirstPerson.Turn(self, 19)
+                Camera.FirstPerson.Turn(self, self.SteerLimit)
 
         else: # Bring values to Zero
             if -5 < self.Steering < 5:
