@@ -101,8 +101,3 @@ class Controls():
             Camera.FirstPerson.Zero(self, False)
 
 
-
-
-
-
-# TODO : Decrease Steering power when Speed gets higher. (Tweak values)

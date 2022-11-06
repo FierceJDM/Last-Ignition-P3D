@@ -3,7 +3,6 @@ from panda3d.core import *
 from panda3d.bullet import *
 from headers.Controls import *
 from headers.Camera import *
-from math import *
 
 
 
@@ -107,7 +106,7 @@ class MainApp(ShowBase):
         self.GroundNP = render.attachNewNode(BulletRigidBodyNode('Ground'))
         self.GroundNP.setPos(0, 0, -1)
         self.GroundNP.setCollideMask(BitMask32.allOn())
-        self.GroundNP.setScale(1, 1, 1)
+        self.GroundNP.setScale(10, 10, 10)
         self.GroundNP.node().addShape(BulletTriangleMeshShape(self.GroundMesh, dynamic=False))
         self.loader.loadModel("../assets/circuit.egg").reparentTo(self.GroundNP)
         self.world.attachRigidBody(self.GroundNP.node())
@@ -133,9 +132,6 @@ class MainApp(ShowBase):
 
         # --------------------------Setup Controls------------------------------
 
-        ChassisPos = self.ChassisNP.getPos()
-        ChassisHPR = self.ChassisNP.getHpr()
-
         self.SteeringClamp = 35.0
         self.SteeringIncrement = 40.0
         self.engineForce = 0.0
@@ -152,14 +148,8 @@ class MainApp(ShowBase):
 
         # -------------------------Update Camera Position and Rotation----------------------------
 
-        
-        self.camera.setPos( ChassisPos.getX()  +  7.6 * Truncate(sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                            ChassisPos.getY()  -  7.6 * Truncate(cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                            ChassisPos.getZ()  -  1.4 * Truncate(sin(ChassisHPR.getY()*(pi/180)), 5)+0.9
-        )
-        self.camera.setHpr( ChassisHPR.getX()+self.CamOffset ,
-                            0 ,
-                            0)
+
+        Camera.Update(self)
 
         return task.cont
 
