@@ -74,6 +74,7 @@ class Controls():
             self.engineForce = -4000.0
             self.brakeForce = 50
         else:
+            self.engineForce = 0
             self.brakeForce = 5
 
         if KeyMap["left"]:

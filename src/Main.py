@@ -185,7 +185,7 @@ class MainApp(ShowBase):
 
 
         # -------------------Update Camera Position and Rotation----------------------
-
+        print(self.Vehicle.getCurrentSpeedKmHour())
         Camera.Update(self)
 
         return task.cont
@@ -201,6 +201,5 @@ app.run()
 
 
 # TODO : Add UI
-# TODO : Check gitignore for unnecesary files
 # TODO : Refactor Vehicle's Wheels definition
 # TODO : Fix sudden cam jump when car crashes
