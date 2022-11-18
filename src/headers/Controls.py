@@ -22,6 +22,8 @@ class Controls():
     def __init__(self):
         self.Steering = 0.0
         self.SteerLimit = 0.0
+        self.engineForce = 0.0
+        self.brakeForce = 0.0
 
         self.accept("f1", UpdateKeyMap, ["f1", True])
         self.accept("w", UpdateKeyMap, ["w", True])
@@ -49,9 +51,9 @@ class Controls():
         ChassisPos = self.ChassisNP.getPos()
 
         if KeyMap["w"]: # Respawn
-            ChassisPos.z = 5
-            ChassisPos.x = -6
-            ChassisPos.y = -8
+            ChassisPos.z = 2
+            ChassisPos.x = 0
+            ChassisPos.y = 200
             self.ChassisNP.node().setLinearVelocity(Point3(0, 0, 0))
             self.ChassisNP.node().setAngularVelocity(Point3(0, 0, 0))
             self.ChassisNP.setPos(ChassisPos)
@@ -69,15 +71,15 @@ class Controls():
             self.engineForce = 2000.0
             self.brakeForce = 0.0
         elif KeyMap["down"]: # Backward
-            self.engineForce = -1700.0
-            self.brakeForce = 0.0
+            self.engineForce = -4000.0
+            self.brakeForce = 50
         else:
             self.brakeForce = 5
 
         if KeyMap["left"]:
             Steer.Left(self)
 
-            if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
+            if -1 < self.Vehicle.getCurrentSpeedKmHour() < 1:
                 Camera.FirstPerson.Zero(self, True)
             else:
                 Camera.FirstPerson.Turn(self, self.SteerLimit)
@@ -85,7 +87,7 @@ class Controls():
         elif KeyMap["right"]:
             Steer.Right(self)
             
-            if -3 < self.Vehicle.getCurrentSpeedKmHour() < 3:
+            if -1 < self.Vehicle.getCurrentSpeedKmHour() < 1:
                 Camera.FirstPerson.Zero(self, True)
             else:
                 Camera.FirstPerson.Turn(self, self.SteerLimit)
