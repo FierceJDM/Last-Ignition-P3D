@@ -102,5 +102,11 @@ class Controls():
                 self.Steering -= self.dt * 60
             
             Camera.FirstPerson.Zero(self, False)
+        
 
-
+        self.Vehicle.setSteeringValue(self.Steering, 0)
+        self.Vehicle.setSteeringValue(self.Steering, 1)
+        self.Vehicle.applyEngineForce(self.engineForce, 2)
+        self.Vehicle.applyEngineForce(self.engineForce, 3)
+        self.Vehicle.setBrake(self.brakeForce, 2)
+        self.Vehicle.setBrake(self.brakeForce, 3)
