@@ -97,16 +97,16 @@ class MainApp(ShowBase):
 
         # ------ Heightfield Terrain :
 
-        TerrainScale = [4, 3, 2]
+        TerrainScale = [6, 6, 3]
         TerrainPos = [0, 0, 0]
 
         self.BTerrainNP = self.render.attachNewNode(BulletRigidBodyNode('Terrain'))
         self.BTerrainNP.setPos(TerrainPos[0],
-                  TerrainPos[1],
-                  TerrainPos[2])
+                               TerrainPos[1],
+                               TerrainPos[2])
         self.BTerrainNP.setScale(TerrainScale[0],
-                     TerrainScale[1],
-                     TerrainScale[2])
+                                 TerrainScale[1],
+                                 TerrainScale[2])
         self.BTerrainNP.node().addShape(BulletHeightfieldShape(PNMImage(Filename('../assets/tex/output_COP301.png')), 10, ZUp))
         self.world.attachRigidBody(self.BTerrainNP.node())
 
@@ -124,8 +124,7 @@ class MainApp(ShowBase):
         self.TerrainNP.setScale(128*TerrainScale[0], 128*TerrainScale[1], 10*TerrainScale[2])          # 128 is .png's width and height
         self.TerrainNP.setPos(-64*TerrainScale[0]+TerrainPos[0], -64*TerrainScale[1]+TerrainPos[1], -5*TerrainScale[2]+TerrainPos[2])
 
-        self.TerrainShader = Shader.load(Shader.SL_GLSL, "../assets/tex/terrain.vert.glsl", "../assets/tex/terrain.frag.glsl")
-        self.TerrainNP.setShader(self.TerrainShader)
+        self.TerrainNP.setShader(Shader.load(Shader.SL_GLSL, "../assets/tex/terrain.vert.glsl", "../assets/tex/terrain.frag.glsl"))
         self.TerrainNP.setShaderInput("camera", self.camera)
 
 
@@ -174,7 +173,7 @@ class MainApp(ShowBase):
         # ------------------------Setup and Update Controls----------------------------
         Controls.Update(self)
         # -------------------Update Camera Position and Rotation----------------------
-        Camera.Update(self)
+        Camera.FirstPerson.Update(self)
 
         return task.cont
 
@@ -188,5 +187,7 @@ app.run()
 
 
 
-# TODO : Add UI
+# TODO : Add UI and Menus
 # TODO : Refactor Vehicle's Wheels definition
+# TODO : Add Other Cameras (Far, 1st, Hood)
+# TODO : Setup Entire Map

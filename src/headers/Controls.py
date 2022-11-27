@@ -1,6 +1,7 @@
 from panda3d.core import *
 from .Camera import *
 from .Steering import *
+from .MiscFunctions import *
 
 KeyMap = {
     "f1" : False,
@@ -20,6 +21,7 @@ def UpdateKeyMap(key, state):
 
 class Controls():
     def __init__(self):
+        self.PedalsStatus = 0
         self.Steering = 0.0
         self.SteerLimit = 0.0
         self.engineForce = 0.0
@@ -48,15 +50,11 @@ class Controls():
         self.accept("j-up", UpdateKeyMap, ["j", False])
 
     def Update(self):
-        ChassisPos = self.ChassisNP.getPos()
 
         if KeyMap["w"]: # Respawn
-            ChassisPos.z = 2
-            ChassisPos.x = 0
-            ChassisPos.y = 200
             self.ChassisNP.node().setLinearVelocity(Point3(0, 0, 0))
             self.ChassisNP.node().setAngularVelocity(Point3(0, 0, 0))
-            self.ChassisNP.setPos(ChassisPos)
+            self.ChassisNP.setPos(0, 200, 12)
             self.ChassisNP.setHpr(0, 0, 0)
 
 
@@ -68,12 +66,15 @@ class Controls():
 
 
         if KeyMap["up"]: # Forward
-            self.engineForce = 2000.0
+            self.PedalsStatus = 0.05
+            self.engineForce = SetSpeedKmHour(self.Vehicle.getCurrentSpeedKmHour())
             self.brakeForce = 0.0
         elif KeyMap["down"]: # Backward
+            self.PedalsStatus = -0.05
             self.engineForce = -4000.0
             self.brakeForce = 50
         else:
+            self.PedalsStatus = 0
             self.engineForce = 0
             self.brakeForce = 5
 
@@ -102,7 +103,6 @@ class Controls():
                 self.Steering -= self.dt * 60
             
             Camera.FirstPerson.Zero(self, False)
-        
 
         self.Vehicle.setSteeringValue(self.Steering, 0)
         self.Vehicle.setSteeringValue(self.Steering, 1)

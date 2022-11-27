@@ -17,3 +17,18 @@ def Dampen(currentpos, camoffset, limitpos=0): # Dampen Camera when approaching 
     
     return currentpos
     
+
+def SetSpeedKmHour(currentspeed):
+    if 0 < currentspeed < 24:
+        desiredspeed =  -0.1 * (currentspeed - 25)**2 + 70
+    elif 24 < currentspeed:
+        desiredspeed = -0.1 * (currentspeed - 59)**2 + 163
+    else:
+        desiredspeed = currentspeed + 1
+        
+    if currentspeed < desiredspeed:
+        return 2500
+    elif currentspeed > desiredspeed:
+        return -2500
+    else:
+        return 0
