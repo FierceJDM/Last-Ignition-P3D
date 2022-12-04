@@ -24,7 +24,7 @@
 }
 
 <Texture> Asphalt_Tex.png {
-  "./tex/Asphalt_Tex.png"
+  "../media/Asphalt_Tex.png"
   <Scalar> format { rgb }
   <Scalar> envtype { modulate }
   <Scalar> uv-name { UVMap }
