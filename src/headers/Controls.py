@@ -1,7 +1,7 @@
 from panda3d.core import *
 from .Camera import *
-from .Steering import *
-from .MiscFunctions import *
+from .misc.Steering import *
+from .misc.MiscFunctions import *
 
 KeyMap = {
     "f1" : False,
@@ -59,18 +59,20 @@ class Controls():
 
 
         if KeyMap["f1"]: # Debug Mode
-            if self.debugNP.isHidden():
-                self.debugNP.show()
+            if self.DebugNP.isHidden():
+                self.DebugNP.show()
             else:
-                self.debugNP.hide()
+                self.DebugNP.hide()
 
 
         if KeyMap["up"]: # Forward
-            self.PedalsStatus = 0.05
+            if self.Vehicle.getCurrentSpeedKmHour() != 0:
+                self.PedalsStatus = 0.03
             self.engineForce = SetSpeedKmHour(self.Vehicle.getCurrentSpeedKmHour())
             self.brakeForce = 0.0
         elif KeyMap["down"]: # Backward
-            self.PedalsStatus = -0.05
+            if self.Vehicle.getCurrentSpeedKmHour() != 0:
+                self.PedalsStatus = -0.03
             self.engineForce = -4000.0
             self.brakeForce = 50
         else:

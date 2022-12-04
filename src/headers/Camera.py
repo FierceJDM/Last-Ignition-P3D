@@ -1,4 +1,4 @@
-from .MiscFunctions import *
+from .misc.MiscFunctions import *
 from math import *
 
 class Camera():
@@ -53,7 +53,7 @@ class Camera():
 
                 self.camera.setPos( ChassisPos.getX()  +  (7 + self.BringNear ) * Truncate(sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
                                     ChassisPos.getY()  -  (7 + self.BringNear ) * Truncate(cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                    ChassisPos.getZ()  -  2.5 * Truncate(sin(ChassisHPR.getY()*(pi/180)), 5)+0.8
+                                    ChassisPos.getZ()  -  2.5 * Truncate(sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
                 )
 
 
@@ -68,12 +68,12 @@ class Camera():
                 if self.Vehicle.getCurrentSpeedKmHour() < 100:
                     self.camera.setPos( ChassisPos.getX()  +  (7 + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.BringNear) * Truncate(sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
                                         ChassisPos.getY()  -  (7 + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.BringNear) * Truncate(cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                        ChassisPos.getZ()  -  2.5 * Truncate(sin(ChassisHPR.getY()*(pi/180)), 5)+0.8
+                                        ChassisPos.getZ()  -  2.5 * Truncate(sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
                     )
                 else:
                     self.camera.setPos( ChassisPos.getX()  +  (8 + self.BringNear) * Truncate(sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
                                         ChassisPos.getY()  -  (8 + self.BringNear) * Truncate(cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                                        ChassisPos.getZ()  -  2.5 * Truncate(sin(ChassisHPR.getY()*(pi/180)), 5)+0.8
+                                        ChassisPos.getZ()  -  2.5 * Truncate(sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
                     )
 
 
