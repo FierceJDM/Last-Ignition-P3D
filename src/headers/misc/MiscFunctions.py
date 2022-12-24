@@ -32,3 +32,6 @@ def SetSpeedKmHour(currentspeed):
         return -2500
     else:
         return 0
+
+def ThreeConv(CurrentFrom, BaseFrom, BaseTo):
+    return CurrentFrom*BaseTo/BaseFrom

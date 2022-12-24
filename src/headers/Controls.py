@@ -1,9 +1,10 @@
 from panda3d.core import *
-from .Camera import *
 from .misc.Steering import *
 from .misc.MiscFunctions import *
+from .Display import *
+from .Camera import *
 
-KeyMap = {
+InputMap = {
     "f1" : False,
     "w" : False,
     "up" : False,
@@ -13,64 +14,82 @@ KeyMap = {
     "y" : False,
     "g" : False,
     "h" : False,
-    "j" : False
+    "j" : False,
+    "escape" : False,
+    "mouse1" : False
 }
 
-def UpdateKeyMap(key, state):
-    KeyMap[key] = state
+def UpdateInputMap(key, state):
+    InputMap[key] = state
 
 class Controls():
     def __init__(self):
+        self.Width, self.Height = 0, 0
+        self.MouseX, self.MouseY = 0, 0
         self.PedalsStatus = 0
         self.Steering = 0.0
         self.SteerLimit = 0.0
         self.engineForce = 0.0
         self.brakeForce = 0.0
 
-        self.accept("f1", UpdateKeyMap, ["f1", True])
-        self.accept("w", UpdateKeyMap, ["w", True])
-        self.accept("arrow_up", UpdateKeyMap, ["up", True])
-        self.accept("arrow_down", UpdateKeyMap, ["down", True])
-        self.accept("arrow_left", UpdateKeyMap, ["left", True])
-        self.accept("arrow_right", UpdateKeyMap, ["right", True])
-        self.accept("y", UpdateKeyMap, ["y", True])
-        self.accept("g", UpdateKeyMap, ["g", True])
-        self.accept("h", UpdateKeyMap, ["h", True])
-        self.accept("j", UpdateKeyMap, ["j", True])
+        self.accept("f1", UpdateInputMap, ["f1", True])
+        self.accept("w", UpdateInputMap, ["w", True])
+        self.accept("arrow_up", UpdateInputMap, ["up", True])
+        self.accept("arrow_down", UpdateInputMap, ["down", True])
+        self.accept("arrow_left", UpdateInputMap, ["left", True])
+        self.accept("arrow_right", UpdateInputMap, ["right", True])
+        self.accept("y", UpdateInputMap, ["y", True])
+        self.accept("g", UpdateInputMap, ["g", True])
+        self.accept("h", UpdateInputMap, ["h", True])
+        self.accept("j", UpdateInputMap, ["j", True])
+        self.accept("escape", UpdateInputMap, ["escape", True])
+        self.accept("mouse1", UpdateInputMap, ["mouse1", True])
 
-        self.accept("f1-up", UpdateKeyMap, ["f1", False])
-        self.accept("w-up", UpdateKeyMap, ["w", False])
-        self.accept("arrow_up-up", UpdateKeyMap, ["up", False])
-        self.accept("arrow_down-up", UpdateKeyMap, ["down", False])
-        self.accept("arrow_left-up", UpdateKeyMap, ["left", False])
-        self.accept("arrow_right-up", UpdateKeyMap, ["right", False])
-        self.accept("y-up", UpdateKeyMap, ["y", False])
-        self.accept("g-up", UpdateKeyMap, ["g", False])
-        self.accept("h-up", UpdateKeyMap, ["h", False])
-        self.accept("j-up", UpdateKeyMap, ["j", False])
+        self.accept("f1-up", UpdateInputMap, ["f1", False])
+        self.accept("w-up", UpdateInputMap, ["w", False])
+        self.accept("arrow_up-up", UpdateInputMap, ["up", False])
+        self.accept("arrow_down-up", UpdateInputMap, ["down", False])
+        self.accept("arrow_left-up", UpdateInputMap, ["left", False])
+        self.accept("arrow_right-up", UpdateInputMap, ["right", False])
+        self.accept("y-up", UpdateInputMap, ["y", False])
+        self.accept("g-up", UpdateInputMap, ["g", False])
+        self.accept("h-up", UpdateInputMap, ["h", False])
+        self.accept("j-up", UpdateInputMap, ["j", False])
+        self.accept("escape-up", UpdateInputMap, ["escape", False])
+        self.accept("mouse1-up", UpdateInputMap, ["mouse1", False])
 
     def Update(self):
+        self.Width, self.Height = base.win.getXSize(), base.win.getYSize()
 
-        if KeyMap["w"]: # Respawn
+        if base.mouseWatcherNode.hasMouse():
+            self.MouseX = base.mouseWatcherNode.getMouseX()
+            self.MouseY = base.mouseWatcherNode.getMouseY()
+
+        if InputMap["mouse1"]:
+            if (50*self.Width/100  -  self.buttontex.getXSize()/2)*2/self.Width-1 < self.MouseX < (50*self.Width/100  +  self.buttontex.getXSize()/2)*2/self.Width-1 and -((75*self.Height/100  -  self.buttontex.getYSize()/2)*2/self.Height-1) > self.MouseY > -((75*self.Height/100  +  self.buttontex.getYSize()/2)*2/self.Height-1):
+                Display.ChangeDisplay(self, "Game")
+
+
+        if InputMap["w"]: # Respawn
             self.ChassisNP.node().setLinearVelocity(Point3(0, 0, 0))
             self.ChassisNP.node().setAngularVelocity(Point3(0, 0, 0))
             self.ChassisNP.setPos(0, 200, 12)
             self.ChassisNP.setHpr(0, 0, 0)
 
 
-        if KeyMap["f1"]: # Debug Mode
+        if InputMap["f1"]: # Debug Mode
             if self.DebugNP.isHidden():
                 self.DebugNP.show()
             else:
                 self.DebugNP.hide()
 
 
-        if KeyMap["up"]: # Forward
+        if InputMap["up"]: # Forward
             if self.Vehicle.getCurrentSpeedKmHour() != 0:
                 self.PedalsStatus = 0.03
             self.engineForce = SetSpeedKmHour(self.Vehicle.getCurrentSpeedKmHour())
             self.brakeForce = 0.0
-        elif KeyMap["down"]: # Backward
+        elif InputMap["down"]: # Backward
             if self.Vehicle.getCurrentSpeedKmHour() != 0:
                 self.PedalsStatus = -0.03
             self.engineForce = -4000.0
@@ -80,7 +99,7 @@ class Controls():
             self.engineForce = 0
             self.brakeForce = 5
 
-        if KeyMap["left"]:
+        if InputMap["left"]:
             Steer.Left(self)
 
             if -1 < self.Vehicle.getCurrentSpeedKmHour() < 1:
@@ -88,7 +107,7 @@ class Controls():
             else:
                 Camera.FirstPerson.Turn(self, self.SteerLimit)
     
-        elif KeyMap["right"]:
+        elif InputMap["right"]:
             Steer.Right(self)
             
             if -1 < self.Vehicle.getCurrentSpeedKmHour() < 1:
