@@ -60,14 +60,27 @@ class Controls():
 
     def Update(self):
         self.Width, self.Height = base.win.getXSize(), base.win.getYSize()
-
+        
         if base.mouseWatcherNode.hasMouse():
-            self.MouseX = base.mouseWatcherNode.getMouseX()
-            self.MouseY = base.mouseWatcherNode.getMouseY()
+            self.MouseX = (base.mouseWatcherNode.getMouseX()+1)*self.Width/2
+            self.MouseY = (-base.mouseWatcherNode.getMouseY()+1)*self.Height/2
 
         if InputMap["mouse1"]:
-            if (50*self.Width/100  -  self.buttontex.getXSize()/2)*2/self.Width-1 < self.MouseX < (50*self.Width/100  +  self.buttontex.getXSize()/2)*2/self.Width-1 and -((75*self.Height/100  -  self.buttontex.getYSize()/2)*2/self.Height-1) > self.MouseY > -((75*self.Height/100  +  self.buttontex.getYSize()/2)*2/self.Height-1):
-                Display.ChangeDisplay(self, "Game")
+            if self.CurrentDisplay == "Home":
+                for i in range(len(self.MenuNP)-3):
+                    # TODO : Replace event by one-time press
+                    Pos = Display.ButtonGroup.GetButtonPos(self, self.MenuNP[i+1])
+
+                    if(Pos[0] < self.MouseX < Pos[1] and Pos[2] < self.MouseY < Pos[3]):
+                        if self.HomeState == "Main":
+                            if i+1 == 1:
+                                Display.ChangeDisplay(self, "Game")
+                            if i+1 == 2:
+                                self.HomeState = "Multiplayer"
+                        if self.HomeState == "Multiplayer":
+                            if i+1 == 3:
+                                self.HomeState = "Main"
+                        
 
 
         if InputMap["w"]: # Respawn
@@ -87,7 +100,7 @@ class Controls():
         if InputMap["up"]: # Forward
             if self.Vehicle.getCurrentSpeedKmHour() != 0:
                 self.PedalsStatus = 0.03
-            self.engineForce = SetSpeedKmHour(self.Vehicle.getCurrentSpeedKmHour())
+            self.engineForce = MiscFunctions.SetSpeedKmHour(self, self.Vehicle.getCurrentSpeedKmHour())
             self.brakeForce = 0.0
         elif InputMap["down"]: # Backward
             if self.Vehicle.getCurrentSpeedKmHour() != 0:

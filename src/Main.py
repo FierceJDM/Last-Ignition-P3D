@@ -24,7 +24,6 @@ class MainApp(ShowBase):
         Controls.__init__(self)
         Camera.__init__(self)
         Display.__init__(self)
-        Display.Home.__init__(self)
 
         # ----------------------------Configure Tasks---------------------------------
 
@@ -59,11 +58,18 @@ app.run()
 
 
 
+# ------------------------- Tasks for v1.0.0 : ---------------------------------
 
-# TODO : Add UI and Menus
 # TODO : Setup Entire Map
 # TODO : Add Drift Physics
 # TODO : Add Audio (Music, Car Sounds, ...)
+# TODO : Add Content (Goal : 10 cars, 10 songs)
 
+# ---------FINISH THE ONES BELOW BEFORE PROCEEDING TO THE ONES ABOVE
+# TODO : Add UI and Menus
 # TODO : Add Other Cameras (Far, 1st, Hood)
 # TODO : Refactor Vehicle's Wheels definition
+
+# ------------------------- Tasks for v1.1.0 : -------------------------------
+
+# TODO : Add Garage, Customization System
