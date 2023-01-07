@@ -5,10 +5,20 @@ to finally become what it is now, hoping this time this idea is not gonna deceiv
 
 Title : Last Ignition
 
-Main Game Theme : A mix of "Racing" and "Adventure" genres. Vehicle-based game set in a open-world (rescaled?) map of the globe (like The Crew 2)
+Main Game Theme : A mix of "Racing" and "Adventure" genres. Vehicle-based game set in a open-world (rescaled?) map of the globe (like The Crew 2).
 
-Game Modes: | Land-Domination inspired from 'Splatoon'.
+Structure : Organized as creatable worlds, offered in diff difficulties (like Terraria).
+
+World Game Modes:
+            | Land-Domination inspired from 'Splatoon'.
             | Paintball-like fight inspired from 'Blur' and 'War Thunder'.
             | Classic races like any other racing game
+            | Elimination game "Last one on the road out" based on real-life, driven-by-music game "Last one standing out"
+
+Events(they determine progress?):  
+            | Last Ignition (last gas car to survive in EV invasion wins)
+            | Scrap Rain (survive in a rain of objects)
+            | 
 
 Story : [Not currently thinking of any story/career idea; there might not even be any story/career at all]
+        [A world progression should be enough]
