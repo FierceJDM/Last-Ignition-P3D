@@ -1,3 +1,5 @@
+from math import *
+
 class MiscFunctions():
     def Truncate(self, n, decimals = 0):
         multiplier = 10 ** decimals
@@ -19,17 +21,42 @@ class MiscFunctions():
         return currentpos
 
 
-    def SetSpeedKmHour(self, currentspeed): #Set next speed (in km/h) based on current speed
-        if 0 < currentspeed < 24:
-            desiredspeed =  -0.1 * (currentspeed - 25)**2 + 70
-        elif 24 < currentspeed:
-            desiredspeed = -0.1 * (currentspeed - 59)**2 + 163
-        else:
-            desiredspeed = currentspeed + 1
+    def SetSpeedKmHour(self, throttle, maxrpm, gearlist): #Set next speed (in km/h) based on current speed
+        desiredspeed = 0
+        
+        
+        if throttle:
+            if self.CurrentGear < len(gearlist) : # Shift Gear
+                if self.CurrentRPM > maxrpm-500:
+                    self.CurrentGear += 1
+                    self.CurrentRPM = self.Vehicle.getCurrentSpeedKmHour()*gearlist[self.CurrentGear-1][1]
 
-        if currentspeed < desiredspeed:
-            return 2500
-        elif currentspeed > desiredspeed:
-            return -2500
+            gearduration = gearlist[self.CurrentGear-1][0] # Calculate Desired Speed
+            if self.CurrentRPM < maxrpm:
+                self.CurrentRPM += maxrpm/gearduration * self.dt
+            desiredspeed = self.CurrentRPM/gearlist[self.CurrentGear-1][1]
+
+            # -----------------------------------------------------------------------------------------
+
+            if self.Vehicle.getCurrentSpeedKmHour() < desiredspeed:
+                return 3000
+            elif self.Vehicle.getCurrentSpeedKmHour() > desiredspeed:
+                return -3000
+            else:
+                return 0
+
+        
         else:
-            return 0
+            # If Automatic, Constantly Shift to Corresponding Gears
+            for i in range(len(gearlist)):
+                if i == 0:
+                    if self.Vehicle.getCurrentSpeedKmHour() < round(maxrpm/gearlist[i][1])-3:
+                        self.CurrentGear = i+1
+                else:
+                    if (maxrpm/gearlist[i-1][1])-3 <= self.Vehicle.getCurrentSpeedKmHour() < (maxrpm/gearlist[i][1])-3:
+                        self.CurrentGear = i+1
+
+            # -----------------------------------------------------------------------------------------
+
+            if self.CurrentRPM > 1000: # Slowly Lower RPM
+                self.CurrentRPM = gearlist[self.CurrentGear-1][1]*self.Vehicle.getCurrentSpeedKmHour()
