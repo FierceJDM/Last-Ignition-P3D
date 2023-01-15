@@ -6,17 +6,16 @@ from .Camera import *
 
 InputMap = {
     "f1" : False,
-    "w" : False,
+    "e" : False,
+    "r" : False,
     "up" : False,
     "down" : False,
     "left" : False,
     "right" : False,
-    "y" : False,
-    "g" : False,
-    "h" : False,
-    "j" : False,
-    "escape" : False,
-    "mouse1" : False
+    "c" : False,
+    "mouse1" : False,
+    "page_up" : False,
+    "page_down" : False
 }
 
 def UpdateInputMap(key, state):
@@ -31,32 +30,29 @@ class Controls():
         self.SteerLimit = 0.0
         self.engineForce = 0.0
         self.brakeForce = 0.0
+        self.GearList = ((3,250), (6, 130), (10, 100), (17, 50))
+        self.CurrentRPM = 100
+        self.CurrentGear = 1
 
-        self.accept("f1", UpdateInputMap, ["f1", True])
-        self.accept("w", UpdateInputMap, ["w", True])
+        self.accept("page_up", UpdateInputMap, ["page_up", True])
+        self.accept("page_down", UpdateInputMap, ["page_down", True])
         self.accept("arrow_up", UpdateInputMap, ["up", True])
         self.accept("arrow_down", UpdateInputMap, ["down", True])
         self.accept("arrow_left", UpdateInputMap, ["left", True])
         self.accept("arrow_right", UpdateInputMap, ["right", True])
-        self.accept("y", UpdateInputMap, ["y", True])
-        self.accept("g", UpdateInputMap, ["g", True])
-        self.accept("h", UpdateInputMap, ["h", True])
-        self.accept("j", UpdateInputMap, ["j", True])
-        self.accept("escape", UpdateInputMap, ["escape", True])
-        self.accept("mouse1", UpdateInputMap, ["mouse1", True])
+        self.accept("e", UpdateInputMap, ["e", True])
+        self.accept("mouse1-up", UpdateInputMap, ["mouse1", True])
+        self.accept("c-up", UpdateInputMap, ["c", True])
+        self.accept("r-up", UpdateInputMap, ["r", True])
+        self.accept("f1-up", UpdateInputMap, ["f1", True])
 
-        self.accept("f1-up", UpdateInputMap, ["f1", False])
-        self.accept("w-up", UpdateInputMap, ["w", False])
+        self.accept("page_up-up", UpdateInputMap, ["page_up", False])
+        self.accept("page_down-up", UpdateInputMap, ["page_down", False])
         self.accept("arrow_up-up", UpdateInputMap, ["up", False])
         self.accept("arrow_down-up", UpdateInputMap, ["down", False])
         self.accept("arrow_left-up", UpdateInputMap, ["left", False])
         self.accept("arrow_right-up", UpdateInputMap, ["right", False])
-        self.accept("y-up", UpdateInputMap, ["y", False])
-        self.accept("g-up", UpdateInputMap, ["g", False])
-        self.accept("h-up", UpdateInputMap, ["h", False])
-        self.accept("j-up", UpdateInputMap, ["j", False])
-        self.accept("escape-up", UpdateInputMap, ["escape", False])
-        self.accept("mouse1-up", UpdateInputMap, ["mouse1", False])
+        self.accept("e-up", UpdateInputMap, ["e", False])
 
     def Update(self):
         self.Width, self.Height = base.win.getXSize(), base.win.getYSize()
@@ -67,11 +63,10 @@ class Controls():
 
         if InputMap["mouse1"]:
             if self.CurrentDisplay == "Home":
-                for i in range(len(self.MenuNP)-3):
-                    # TODO : Replace event by one-time press
-                    Pos = Display.ButtonGroup.GetButtonPos(self, self.MenuNP[i+1])
+                for i in range(len(self.MenuNP)-3): # Cycle through all buttons of the group
+                    BGPos = Display.ButtonGroup.GetButtonPos(self, self.MenuNP[i+1])
 
-                    if(Pos[0] < self.MouseX < Pos[1] and Pos[2] < self.MouseY < Pos[3]):
+                    if(BGPos[0] < self.MouseX < BGPos[1] and BGPos[2] < self.MouseY < BGPos[3]):
                         if self.HomeState == "Main":
                             if i+1 == 1:
                                 Display.ChangeDisplay(self, "Game")
@@ -80,54 +75,75 @@ class Controls():
                         if self.HomeState == "Multiplayer":
                             if i+1 == 3:
                                 self.HomeState = "Main"
-                        
+            UpdateInputMap("mouse1", False)
 
+        if InputMap["page_up"]:
+            Camera.Rotate.Update(self, -90)
+        elif InputMap["page_down"]:
+            Camera.Rotate.Update(self, 90)
+        elif InputMap["e"]:
+            Camera.Rotate.Update(self, 180)
+        else:
+            if InputMap["c"]: # Cycle Cam
+                if self.CurrentDisplay == "Game":
+                    Camera.CycleCameras(self)
+                UpdateInputMap("c", False)
+            Camera.Update(self)
 
-        if InputMap["w"]: # Respawn
+        if InputMap["r"]: # Respawn
             self.ChassisNP.node().setLinearVelocity(Point3(0, 0, 0))
             self.ChassisNP.node().setAngularVelocity(Point3(0, 0, 0))
             self.ChassisNP.setPos(0, 200, 12)
             self.ChassisNP.setHpr(0, 0, 0)
-
+            UpdateInputMap("r", False)
 
         if InputMap["f1"]: # Debug Mode
             if self.DebugNP.isHidden():
                 self.DebugNP.show()
             else:
                 self.DebugNP.hide()
+            UpdateInputMap("f1", False)
+
 
 
         if InputMap["up"]: # Forward
+            self.engineForce = MiscFunctions.SetSpeedKmHour(self, True, 5000, self.GearList)
+
             if self.Vehicle.getCurrentSpeedKmHour() != 0:
                 self.PedalsStatus = 0.03
-            self.engineForce = MiscFunctions.SetSpeedKmHour(self, self.Vehicle.getCurrentSpeedKmHour())
             self.brakeForce = 0.0
         elif InputMap["down"]: # Backward
-            if self.Vehicle.getCurrentSpeedKmHour() != 0:
-                self.PedalsStatus = -0.03
-            self.engineForce = -4000.0
+            MiscFunctions.SetSpeedKmHour(self, False, 5000, self.GearList)
+
+            if self.Vehicle.getCurrentSpeedKmHour() >= -15:
+                self.engineForce = -3500.0
+                if self.Vehicle.getCurrentSpeedKmHour() != 0:
+                    self.PedalsStatus = -0.03
+            else:
+                self.engineForce = 0
             self.brakeForce = 50
         else:
+            MiscFunctions.SetSpeedKmHour(self, False, 5000, self.GearList)
+
             self.PedalsStatus = 0
             self.engineForce = 0
             self.brakeForce = 5
+
 
         if InputMap["left"]:
             Steer.Left(self)
 
             if -1 < self.Vehicle.getCurrentSpeedKmHour() < 1:
-                Camera.FirstPerson.Zero(self, True)
+                Camera.Zero(self, True)
             else:
-                Camera.FirstPerson.Turn(self, self.SteerLimit)
-    
+                Camera.Turn(self, self.SteerLimit)
         elif InputMap["right"]:
             Steer.Right(self)
             
             if -1 < self.Vehicle.getCurrentSpeedKmHour() < 1:
-                Camera.FirstPerson.Zero(self, True)
+                Camera.Zero(self, True)
             else:
-                Camera.FirstPerson.Turn(self, self.SteerLimit)
-
+                Camera.Turn(self, self.SteerLimit)
         else: # Bring values to Zero
             if -5 < self.Steering < 5:
                 self.Steering = 0.0
@@ -136,7 +152,8 @@ class Controls():
             elif self.Steering > 0:
                 self.Steering -= self.dt * 60
             
-            Camera.FirstPerson.Zero(self, False)
+            Camera.Zero(self, False)
+
 
         self.Vehicle.setSteeringValue(self.Steering, 0)
         self.Vehicle.setSteeringValue(self.Steering, 1)

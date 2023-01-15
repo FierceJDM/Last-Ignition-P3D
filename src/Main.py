@@ -59,15 +59,6 @@ app = MainApp()
 app.run()
 
 
-# DONE : Automatic Gearbox, 
-
-#        Fixed Camera Problem over 95km/h,
-
-#        Added "Far" Camera,
-#        Added "Rotate" Camera,
-
-#        Added Font and Frames,
-
 # ------------------------- Tasks for v1.0.0 : ---------------------------------
 
 # TODO : Setup Entire Map
@@ -78,7 +69,6 @@ app.run()
 # ---------FINISH THE ONES BELOW BEFORE PROCEEDING TO THE ONES ABOVE----------
 
 # TODO : Add UI and Menus
-# TODO : Add Other Cameras (1st, Hood)
 
 # ------------------------- Tasks for v1.1.0 : ------------------------------
 
