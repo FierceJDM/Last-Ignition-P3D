@@ -15,6 +15,11 @@ class MainApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         self.disableMouse()
+        self.NotifFont = loader.loadFont('../assets/media/Notificateur.ttf')
+        slantfont = TextProperties()
+        slantfont.setSlant(0.3)
+        textpropMgr = TextPropertiesManager.getGlobalPtr()
+        textpropMgr.setProperties("slant", slantfont)
         self.EverythingNP = NodePath('Everything')
         
         InitiateAllObjects(self)
@@ -41,9 +46,6 @@ class MainApp(ShowBase):
 
         # ------------------------Update Everything Below----------------------------
         
-        #if <certain cam state>:
-        #   update <that cam state>
-        Camera.FirstPerson.Update(self)
         Display.Update(self)
         Controls.Update(self)
 
@@ -57,6 +59,14 @@ app = MainApp()
 app.run()
 
 
+# DONE : Automatic Gearbox, 
+
+#        Fixed Camera Problem over 95km/h,
+
+#        Added "Far" Camera,
+#        Added "Rotate" Camera,
+
+#        Added Font and Frames,
 
 # ------------------------- Tasks for v1.0.0 : ---------------------------------
 
@@ -65,11 +75,11 @@ app.run()
 # TODO : Add Audio (Music, Car Sounds, ...)
 # TODO : Add Content (Goal : 10 cars, 10 songs)
 
-# ---------FINISH THE ONES BELOW BEFORE PROCEEDING TO THE ONES ABOVE
-# TODO : Add UI and Menus
-# TODO : Add Other Cameras (Far, 1st, Hood)
-# TODO : Refactor Vehicle's Wheels definition
+# ---------FINISH THE ONES BELOW BEFORE PROCEEDING TO THE ONES ABOVE----------
 
-# ------------------------- Tasks for v1.1.0 : -------------------------------
+# TODO : Add UI and Menus
+# TODO : Add Other Cameras (1st, Hood)
+
+# ------------------------- Tasks for v1.1.0 : ------------------------------
 
 # TODO : Add Garage, Customization System

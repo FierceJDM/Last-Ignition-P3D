@@ -107,6 +107,11 @@ class Display():
             self.SpeedNP.node().setText("0")
             self.SpeedNP.node().setTextColor(0, 0, 0, 1)
             self.SpeedNP.node().setAlign(TextNode.ACenter)
+
+            self.GearNP = pixel2d.attachNewNode(TextNode('currentspeed'))
+            self.GearNP.node().setText("0")
+            self.GearNP.node().setTextColor(0, 0, 0, 1)
+            self.GearNP.node().setAlign(TextNode.ACenter)
             
             self.SpeedometerTEX = loader.loadTexture('../assets/media/Speedometer.png')
             self.SpeedometerNP = pixel2d.attachNewNode(CardMaker('speedometer').generate())
@@ -115,10 +120,17 @@ class Display():
 
         def Update(self):
             self.SpeedNP.node().setText(f"{abs(round(self.Vehicle.getCurrentSpeedKmHour()))}")
-            self.SpeedNP.setScale(65*self.Width/1920, 0, 65*self.Height/1080)
+            self.SpeedNP.setScale(70*self.Width/1920, 0, 70*self.Height/1080)
             self.SpeedNP.setPos((85*self.Width/100),
                                  0, 
                                  -(85*self.Height/100)
+            )
+
+            self.GearNP.node().setText(f"{self.CurrentGear}")
+            self.GearNP.setScale(65*self.Width/1920, 0, 65*self.Height/1080)
+            self.GearNP.setPos((85*self.Width/100),
+                                 0, 
+                                 -(95*self.Height/100)
             )
 
             self.SpeedometerNP.setScale(self.SpeedometerTEX.getXSize()*self.Width/1920, 
@@ -134,10 +146,11 @@ class Display():
             self.EverythingNP.detachNode()
             self.SpeedometerNP.detachNode()
             self.SpeedNP.detachNode()
+            self.GearNP.detachNode()
 
 
     class Home():
-        # TODO : Adjust Visual (Better font, video, etc...)
+        # TODO : Adjust Visual (video, menu frames)
         def __init__(self):
             self.HomeState = "Main"
             self.InitState = 0
@@ -153,6 +166,16 @@ class Display():
             self.HomeFadeNP.setTransparency(True)
             #-------------------------------------------------------------------------------------------------------------------
             self.MenuNP = None
+            #-------------------------------------------------------------------------------------------------------------------
+            self.MenuFrame1TEX = loader.loadTexture('../assets/media/MenuFrame1.png')
+            self.MenuFrame1NP = pixel2d.attachNewNode(CardMaker('MenuFrame1').generate())
+            self.MenuFrame1NP.setTexture(self.MenuFrame1TEX)
+            self.MenuFrame1NP.setTransparency(True)
+            #-------------------------------------------------------------------------------------------------------------------
+            self.MenuFrame2TEX = loader.loadTexture('../assets/media/MenuFrame2.png')
+            self.MenuFrame2NP = pixel2d.attachNewNode(CardMaker('MenuFrame2').generate())
+            self.MenuFrame2NP.setTexture(self.MenuFrame2TEX)
+            self.MenuFrame2NP.setTransparency(True)
 
 
         def Update(self):
@@ -186,11 +209,34 @@ class Display():
 
             Display.ButtonGroup.Update(self, self.MenuNP)
             #-------------------------------------------------------------------------------------------------------------------
+            for i in range(len(self.MenuNP)-3):
+                BGPos = Display.ButtonGroup.GetButtonPos(self, self.MenuNP[i+1])
+
+                if(BGPos[0] < self.MouseX < BGPos[1] and BGPos[2] < self.MouseY < BGPos[3]):
+                    self.MenuFrame1NP.setScale(self.MenuFrame1TEX.getXSize()   *self.Width/1920,
+                                              0,
+                                              self.MenuFrame1TEX.getYSize()  *self.Height/1080
+                    )
+                    self.MenuFrame1NP.setPos(BGPos[0]-(15*self.Width/1920),
+                                             0, 
+                                             -BGPos[2] - (self.MenuFrame1TEX.getYSize()  *self.Height/1080)
+                    )
+                    self.MenuFrame2NP.setScale(self.MenuFrame2TEX.getXSize()   *self.Width/1920,
+                                              0,
+                                              self.MenuFrame2TEX.getYSize()  *self.Height/1080
+                    )
+                    self.MenuFrame2NP.setPos(BGPos[1] - (self.MenuFrame2TEX.getXSize()   *self.Width/1920),
+                                             0, 
+                                             -BGPos[3]
+                    )
+            #-------------------------------------------------------------------------------------------------------------------
 
         def Close(self):
             self.MenuVideoNP.detachNode()
             self.HomeFadeNP.detachNode()
             Display.ButtonGroup.Close(self, self.MenuNP)
+            self.MenuFrame1NP.detachNode()
+            self.MenuFrame2NP.detachNode()
 
 
 
@@ -242,17 +288,19 @@ class Display():
             BGElements = []
 
             MenuTitleNP = pixel2d.attachNewNode(TextNode('MenuTitle'))
-            MenuTitleNP.node().setTextColor(0, 1, 1, 1)
+            MenuTitleNP.node().setTextColor(0, 0, 1, 1)
             MenuTitleNP.node().setAlign(TextNode.ALeft)
+            MenuTitleNP.node().setFont(self.NotifFont)
 
             BGElements.append(MenuTitleNP)
 
 
             for i in range(len(list1)):
                 Element = pixel2d.attachNewNode(TextNode(f'BGElement {i}'))
-                Element.node().setText(list1[i])
-                Element.node().setTextColor(0, 0, 1, 1)
+                Element.node().setText(f"\1slant\1{list1[i]}\2")
+                Element.node().setTextColor(1, 1, 1, 1)
                 Element.node().setAlign(TextNode.ALeft)
+                Element.node().setFont(self.NotifFont)
                 BGElements.append(Element)
 
             BGElements.append(pos)
@@ -263,7 +311,7 @@ class Display():
         
         def Update(self, BG):
             if self.HomeState != "Main":
-                BG[0].node().setText(self.HomeState)
+                BG[0].node().setText(f"\1slant\1{self.HomeState}\2")
                 BG[0].setScale(BG[len(BG)-1][0]*1.5  *(self.Width/1920),
                                0,
                                BG[len(BG)-1][0]*1.5  *(self.Height/1080)
@@ -276,7 +324,7 @@ class Display():
 
 
             for i in range(1, len(BG)-2):
-                BG[i].setScale(BG[len(BG)-1][0]  *(self.Width/1910),
+                BG[i].setScale(BG[len(BG)-1][0]  *(self.Width/1920),
                                0,  
                                BG[len(BG)-1][1]  *(self.Height/1080)
                 )
@@ -291,7 +339,7 @@ class Display():
 
         def GetButtonPos(self, Button):
             return (Button.getX(),
-                   Button.getX() + (Button.getScale()[0]*11*self.Width/1920),
-                   -Button.getZ() - ((Button.getScale()[2]*self.Width/1080)),
-                   -Button.getZ() + ((Button.getScale()[2]*self.Width/1080)/2)
+                   Button.getX() + (Button.getScale()[0]*3*self.Width/1920),
+                   -Button.getZ() - (Button.getScale()[2]),
+                   -Button.getZ() + (Button.getScale()[2]/2)
             )
