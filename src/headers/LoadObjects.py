@@ -1,5 +1,6 @@
 from panda3d.core import *
 from panda3d.bullet import *
+import json
 
 def InitiateAllObjects(self):
     # ---------------------------- Setup Debug Mode ------------------------------
@@ -15,6 +16,8 @@ def InitiateAllObjects(self):
     self.world.setDebugNode(self.DebugNP.node())
     # -------------------------------Create Models--------------------------------
     # ------------------ Vehicle :
+    MDFile = open("../assets/cars/nissan/metadata.json")
+    self.VehicleMetadata = json.load(MDFile)
     self.ChassisGeomNodes = self.loader.loadModel("../assets/cars/nissan/untitled.bam").findAllMatches('**/+GeomNode')
     self.ChassisGeomNode = self.ChassisGeomNodes.getPath(0).node()
     self.ChassisGeom = self.ChassisGeomNode.getGeom(0)
@@ -31,7 +34,7 @@ def InitiateAllObjects(self):
     self.ChassisNP.node().setCcdSweptSphereRadius(0.10)
     self.ChassisNP.node().setMass(1500.0)
     self.ChassisNP.node().setDeactivationEnabled(False)
-    self.loader.loadModel('../assets/cars/nissan/nissan.bam').reparentTo(self.ChassisNP)
+    self.loader.loadModel('../assets/cars/nissan/nissan.egg').reparentTo(self.ChassisNP)
     self.world.attachRigidBody(self.ChassisNP.node())
     self.Vehicle = BulletVehicle(self.world, self.ChassisNP.node())
     self.Vehicle.setCoordinateSystem(ZUp)
@@ -51,24 +54,25 @@ def InitiateAllObjects(self):
         self.WheelsList[i].reparentTo(self.EverythingNP)
         self.WheelsList[i+4] = self.Vehicle.createWheel()
         self.WheelsList[i+4].setNode(self.WheelsList[i].node())
+        WheelsPos = self.VehicleMetadata["WheelsPos"]
         if i == 0:
-            self.WheelsList[i+4].setChassisConnectionPointCs(Point3(0.75, 1.2, 0.0))
+            self.WheelsList[i+4].setChassisConnectionPointCs(Point3(WheelsPos["1"]["X"], WheelsPos["1"]["Y"], WheelsPos["1"]["Z"]))
             self.WheelsList[i+4].setFrontWheel(True)
         elif i == 1:
-            self.WheelsList[i+4].setChassisConnectionPointCs(Point3(-0.75, 1.2, 0.0))
+            self.WheelsList[i+4].setChassisConnectionPointCs(Point3(WheelsPos["2"]["X"], WheelsPos["2"]["Y"], WheelsPos["2"]["Z"]))
             self.WheelsList[i+4].setFrontWheel(True)
         elif i == 2:
-            self.WheelsList[i+4].setChassisConnectionPointCs(Point3(0.75, -1.15, 0.0))
+            self.WheelsList[i+4].setChassisConnectionPointCs(Point3(WheelsPos["3"]["X"], WheelsPos["3"]["Y"], WheelsPos["3"]["Z"]))
         else:
-            self.WheelsList[i+4].setChassisConnectionPointCs(Point3(-0.75, -1.15, 0.0))
+            self.WheelsList[i+4].setChassisConnectionPointCs(Point3(WheelsPos["4"]["X"], WheelsPos["4"]["Y"], WheelsPos["4"]["Z"]))
         self.WheelsList[i+4].setWheelDirectionCs(Vec3(0, 0, -1))
         self.WheelsList[i+4].setWheelAxleCs(Vec3(1, 0, 0))
-        self.WheelsList[i+4].setWheelRadius(0.3305)
+        self.WheelsList[i+4].setWheelRadius(self.VehicleMetadata["WheelsRadius"])
         self.WheelsList[i+4].setMaxSuspensionTravelCm(10.0)
         self.WheelsList[i+4].setSuspensionStiffness(40.0)
         self.WheelsList[i+4].setWheelsDampingRelaxation(2.3)
         self.WheelsList[i+4].setWheelsDampingCompression(4.4)
-        self.WheelsList[i+4].setFrictionSlip(100.0)
+        self.WheelsList[i+4].setFrictionSlip(100)
         self.WheelsList[i+4].setRollInfluence(0.1)
 
     # ------ Heightfield Terrain :

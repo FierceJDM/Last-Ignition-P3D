@@ -3,6 +3,7 @@ from .misc.Steering import *
 from .misc.MiscFunctions import *
 from .Display import *
 from .Camera import *
+import json
 
 InputMap = {
     "f1" : False,
@@ -15,7 +16,8 @@ InputMap = {
     "c" : False,
     "mouse1" : False,
     "page_up" : False,
-    "page_down" : False
+    "page_down" : False,
+    "enter" : False
 }
 
 def UpdateInputMap(key, state):
@@ -30,7 +32,9 @@ class Controls():
         self.SteerLimit = 0.0
         self.engineForce = 0.0
         self.brakeForce = 0.0
-        self.GearList = ((3,250), (6, 130), (10, 100), (17, 50))
+        self.GearList = []
+        for gear in self.VehicleMetadata['GearList']:
+            self.GearList.append((gear['gearduration'], gear['coef']))
         self.CurrentRPM = 100
         self.CurrentGear = 1
 
@@ -45,6 +49,7 @@ class Controls():
         self.accept("c-up", UpdateInputMap, ["c", True])
         self.accept("r-up", UpdateInputMap, ["r", True])
         self.accept("f1-up", UpdateInputMap, ["f1", True])
+        self.accept("enter-up", UpdateInputMap, ["enter", True])
 
         self.accept("page_up-up", UpdateInputMap, ["page_up", False])
         self.accept("page_down-up", UpdateInputMap, ["page_down", False])
@@ -72,10 +77,17 @@ class Controls():
                                 Display.ChangeDisplay(self, "Game")
                             if i+1 == 2:
                                 self.HomeState = "Multiplayer"
-                        if self.HomeState == "Multiplayer":
-                            if i+1 == 3:
+                        elif self.HomeState == "Multiplayer":
+                            if i+1 == 2:
                                 self.HomeState = "Main"
             UpdateInputMap("mouse1", False)
+
+        if InputMap["enter"]:
+            if self.CurrentDisplay == "Splash":
+                if self.SplashState == [1, 1]:
+                    self.SplashState = [1, 2]
+            UpdateInputMap("enter", False)
+
 
         if InputMap["page_up"]:
             Camera.Rotate.Update(self, -90)

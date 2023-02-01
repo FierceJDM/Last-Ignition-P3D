@@ -21,6 +21,7 @@ class MainApp(ShowBase):
         textpropMgr = TextPropertiesManager.getGlobalPtr()
         textpropMgr.setProperties("slant", slantfont)
         self.EverythingNP = NodePath('Everything')
+        base.camLens.setFov(45)
         
         InitiateAllObjects(self)
 
@@ -62,14 +63,15 @@ app.run()
 # ------------------------- Tasks for v1.0.0 : ---------------------------------
 
 # TODO : Setup Entire Map
-# TODO : Add Drift Physics
 # TODO : Add Audio (Music, Car Sounds, ...)
 # TODO : Add Content (Goal : 10 cars, 10 songs)
 
 # ---------FINISH THE ONES BELOW BEFORE PROCEEDING TO THE ONES ABOVE----------
 
-# TODO : Add UI and Menus
+# TODO : Add UI and Menus (Menus, Video)
 
 # ------------------------- Tasks for v1.1.0 : ------------------------------
 
 # TODO : Add Garage, Customization System
+# TODO : Add Drift Physics
+# TODO : Add Multiplayer

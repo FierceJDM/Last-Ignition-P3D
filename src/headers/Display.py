@@ -12,13 +12,20 @@ class Display():
             self.StartTime = 0
 
             self.MadeUsingNP = pixel2d.attachNewNode(TextNode('MadeWith'))
-            self.MadeUsingNP.node().setText("Made using :")
+            self.MadeUsingNP.node().setText("\1slant\1Made using :\2")
             self.MadeUsingNP.node().setTextColor(1, 1, 1, 1)
             self.MadeUsingNP.node().setAlign(TextNode.ACenter)
+            self.MadeUsingNP.node().setFont(self.NotifFont)
 
             self.PandaLogoTEX = loader.loadTexture('../assets/media/P3DLogo.png')
             self.PandaLogoNP = pixel2d.attachNewNode(CardMaker('pandalogo').generate())
             self.PandaLogoNP.setTexture(self.PandaLogoTEX)
+            self.PandaLogoNP.setTransparency(True)
+
+            self.LogoTEX = loader.loadTexture('../assets/media/Logo2.png')
+            self.LogoNP = pixel2d.attachNewNode(CardMaker('logo').generate())
+            self.LogoNP.setTexture(self.LogoTEX)
+            self.LogoNP.setTransparency(True)
 
             self.CurtainsAlpha = 1
             self.CurtainsTEX = loader.loadTexture('../assets/media/Curtains.png')
@@ -28,7 +35,7 @@ class Display():
 
         def Update(self):
             if self.SplashState[0] == 0:
-                self.MadeUsingNP.setScale((100*self.Width/1920), 0, (100*self.Height/1080))
+                self.MadeUsingNP.setScale((75*self.Width/1920), 0, (75*self.Height/1080))
                 self.MadeUsingNP.setPos((50*self.Width/100), 0, -(25*self.Height/100))
 
                 self.PandaLogoNP.setScale(self.PandaLogoTEX.getXSize()*self.Width/1920,
@@ -37,7 +44,7 @@ class Display():
                 )
                 self.PandaLogoNP.setPos((50*self.Width/100)-((self.PandaLogoTEX.getXSize()*self.Width/1920)/2),
                                         0, 
-                                        -(63*self.Height/100)-((self.PandaLogoTEX.getYSize()*self.Height/1080)/2)
+                                        -(55*self.Height/100)-((self.PandaLogoTEX.getYSize()*self.Height/1080)/2)
                 )
 
                 if self.SplashState[1] == 0:
@@ -61,29 +68,37 @@ class Display():
                         self.StartTime = time.time()
                     if (time.time() - self.StartTime) > 1.5:
                         self.StartTime = 0
-                        self.SplashState = [2, 0]
-
-                
+                        self.SplashState = [1, 0]
+            
             elif self.SplashState[0] == 1:
+                self.LogoNP.setScale(self.LogoTEX.getXSize()*self.Width/1920,
+                                     0, 
+                                     self.LogoTEX.getYSize()*self.Height/1080
+                )
+                self.LogoNP.setPos((50*self.Width/100)-((self.LogoTEX.getXSize()*self.Width/1920)/2),
+                                    0, 
+                                    -(25*self.Height/100)-((self.LogoTEX.getYSize()*self.Height/1080)/2)
+                )
+
                 if self.SplashState[1] == 0:
                     self.CurtainsAlpha -= 0.02
                     if self.CurtainsAlpha < 0:
                         self.SplashState = [1, 1]
-                if self.SplashState[1] == 1:
-                    if self.StartTime == 0:
-                        self.StartTime = time.time()
-                    if (time.time() - self.StartTime) > 2:
-                        self.StartTime = 0
-                        self.SplashState = [1, 2]
                 if self.SplashState[1] == 2:
                     self.CurtainsAlpha += 0.02
                     if self.CurtainsAlpha > 1 :
-                        self.SplashState = [2, 0]
-            
-            elif self.SplashState[0] == 2:
-                #Display Logo, "Press Enter"
-                #Detect "Enter" key press
-                Display.ChangeDisplay(self, "Home")
+                        self.SplashState = [1, 3]
+                if self.SplashState[1] == 3:
+                    self.PandaLogoNP.detachNode()
+                    self.MadeUsingNP.detachNode()
+                    if self.StartTime == 0:
+                        self.StartTime = time.time()
+                    if (time.time() - self.StartTime) > 1.5:
+                        self.StartTime = 0
+                        self.SplashState = [1, 4]
+                if self.SplashState[1] == 4:
+                    self.LogoNP.detachNode()
+                    Display.ChangeDisplay(self, "Home")
             
             self.CurtainsNP.setScale(self.Width, 0, self.Height)
             self.CurtainsNP.setPos(0, 0, -self.Height)
@@ -105,13 +120,15 @@ class Display():
 
             self.SpeedNP = pixel2d.attachNewNode(TextNode('currentspeed'))
             self.SpeedNP.node().setText("0")
-            self.SpeedNP.node().setTextColor(0, 0, 0, 1)
+            self.SpeedNP.node().setTextColor(0, 0, 1, 1)
             self.SpeedNP.node().setAlign(TextNode.ACenter)
+            self.SpeedNP.node().setFont(self.NotifFont)
 
             self.GearNP = pixel2d.attachNewNode(TextNode('currentspeed'))
             self.GearNP.node().setText("0")
             self.GearNP.node().setTextColor(0, 0, 0, 1)
             self.GearNP.node().setAlign(TextNode.ACenter)
+            self.GearNP.node().setFont(self.NotifFont)
             
             self.SpeedometerTEX = loader.loadTexture('../assets/media/Speedometer.png')
             self.SpeedometerNP = pixel2d.attachNewNode(CardMaker('speedometer').generate())
@@ -150,7 +167,6 @@ class Display():
 
 
     class Home():
-        # TODO : Adjust Visual (video, menu frames)
         def __init__(self):
             self.HomeState = "Main"
             self.InitState = 0
@@ -204,7 +220,7 @@ class Display():
             if self.HomeState == "Main":
                 self.MenuNP = Display.ButtonGroup.CreateGroup(self, ["World", "Multiplayer", "Challenges", "Credits", "Settings", "Quit"], [5,50], [75,75])
             elif self.HomeState == "Multiplayer":
-                self.MenuNP = Display.ButtonGroup.CreateGroup(self, ["My Worlds", "Join World", "Challenges"], [5,60], [75,75])
+                self.MenuNP = Display.ButtonGroup.CreateGroup(self, ["Coming Soon !", "Back"], [5,60], [75,75])
 
 
             Display.ButtonGroup.Update(self, self.MenuNP)
@@ -217,7 +233,7 @@ class Display():
                                               0,
                                               self.MenuFrame1TEX.getYSize()  *self.Height/1080
                     )
-                    self.MenuFrame1NP.setPos(BGPos[0]-(15*self.Width/1920),
+                    self.MenuFrame1NP.setPos(BGPos[0],
                                              0, 
                                              -BGPos[2] - (self.MenuFrame1TEX.getYSize()  *self.Height/1080)
                     )
@@ -243,9 +259,9 @@ class Display():
     def __init__(self):
         self.BGCount = 0
 
-        self.CurrentDisplay = "Home"
+        self.CurrentDisplay = "Splash"
         self.ChangeDisplay = False
-        Display.Home.__init__(self)
+        Display.Splash.__init__(self)
 
 
     def ChangeDisplay(self, display):
@@ -339,7 +355,7 @@ class Display():
 
         def GetButtonPos(self, Button):
             return (Button.getX(),
-                   Button.getX() + (Button.getScale()[0]*3*self.Width/1920),
+                   Button.getX() + (75*7*self.Width/1920),
                    -Button.getZ() - (Button.getScale()[2]),
                    -Button.getZ() + (Button.getScale()[2]/2)
             )

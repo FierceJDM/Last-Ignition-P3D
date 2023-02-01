@@ -38,6 +38,7 @@ class Camera():
         def Update(self):
             ChassisPos = self.ChassisNP.getPos()
             ChassisHPR = self.ChassisNP.getHpr()
+            CamValues = self.VehicleMetadata["Camera"]["ThirdPerson"]
 
             # Check if car has crashed :
             self.SpeedA = self.Vehicle.getCurrentSpeedKmHour()
@@ -54,10 +55,10 @@ class Camera():
                     self.CrashOffset = 0
                     self.CarCrashed = False
 
-                self.camera.setPos( ChassisPos.getX()  +  (7 + self.CrashOffset ) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                    ChassisPos.getY()  -  (7 + self.CrashOffset ) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                    ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
-                )
+                self.camera.setPos( ChassisPos.getX()  +  (CamValues["XY"] + self.CrashOffset ) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
+                                    ChassisPos.getY()  -  (CamValues["XY"] + self.CrashOffset ) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
+                                    ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+CamValues["Z"])
+                
 
 
             else: # If not, execute normal camera positioning
@@ -69,15 +70,13 @@ class Camera():
 
 
                 if self.Vehicle.getCurrentSpeedKmHour() < 100:
-                    self.camera.setPos( ChassisPos.getX()  +  (7 + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                        ChassisPos.getY()  -  (7 + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                        ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
-                    )
+                    self.camera.setPos( ChassisPos.getX()  +  (CamValues["XY"] + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
+                                        ChassisPos.getY()  -  (CamValues["XY"] + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
+                                        ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+CamValues["Z"])
                 else:
-                    self.camera.setPos( ChassisPos.getX()  +  (8 + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                                        ChassisPos.getY()  -  (8 + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                                        ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
-                    )
+                    self.camera.setPos( ChassisPos.getX()  +  (CamValues["XY"] + 1 + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                                        ChassisPos.getY()  -  (CamValues["XY"] + 1 + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                                        ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+CamValues["Z"])
 
 
             self.camera.setHpr( ChassisHPR.getX()+self.CamOffset ,
@@ -112,6 +111,7 @@ class Camera():
         def Update(self):
             ChassisPos = self.ChassisNP.getPos()
             ChassisHPR = self.ChassisNP.getHpr()
+            CamValues = self.VehicleMetadata["Camera"]["Far"]
 
             # Check if car has crashed :
             self.SpeedA = self.Vehicle.getCurrentSpeedKmHour()
@@ -128,10 +128,9 @@ class Camera():
                     self.CrashOffset = 0
                     self.CarCrashed = False
 
-                self.camera.setPos( ChassisPos.getX()  +  (8 + self.CrashOffset ) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                    ChassisPos.getY()  -  (8 + self.CrashOffset ) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                    ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
-                )
+                self.camera.setPos( ChassisPos.getX()  +  (CamValues["XY"] + self.CrashOffset ) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
+                                    ChassisPos.getY()  -  (CamValues["XY"] + self.CrashOffset ) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
+                                    ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+CamValues["Z"])
 
 
             else: # If not, execute normal camera positioning
@@ -143,15 +142,13 @@ class Camera():
 
 
                 if self.Vehicle.getCurrentSpeedKmHour() < 100:
-                    self.camera.setPos( ChassisPos.getX()  +  (8 + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                        ChassisPos.getY()  -  (8 + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
-                                        ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
-                    )
+                    self.camera.setPos( ChassisPos.getX()  +  (CamValues["XY"] + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
+                                        ChassisPos.getY()  -  (CamValues["XY"] + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  ,
+                                        ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+CamValues["Z"])
                 else:
-                    self.camera.setPos( ChassisPos.getX()  +  (9 + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                                        ChassisPos.getY()  -  (9 + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
-                                        ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
-                    )
+                    self.camera.setPos( ChassisPos.getX()  +  (CamValues["XY"] + 1 + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                                        ChassisPos.getY()  -  (CamValues["XY"] + 1 + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+self.CamOffset)*(pi/180)), 5)  , 
+                                        ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+CamValues["Z"])
 
 
             self.camera.setHpr( ChassisHPR.getX()+self.CamOffset ,
@@ -162,35 +159,28 @@ class Camera():
         def Update(self):
             ChassisPos = self.ChassisNP.getPos()
             ChassisHPR = self.ChassisNP.getHpr()
+            CamValues = self.VehicleMetadata["Camera"]["Hood"]
 
-            self.camera.setPos( ChassisPos.getX()  +  0.34 * MiscFunctions.Truncate(self, sin((ChassisHPR.getX())*(pi/180)), 5)  , 
-                                ChassisPos.getY()  -  0.34 * MiscFunctions.Truncate(self, cos((ChassisHPR.getX())*(pi/180)), 5)  , 
-                                ChassisPos.getZ()  -  MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
-            )
+            self.camera.setPos( ChassisPos.getX()  +  CamValues["XY"] * MiscFunctions.Truncate(self, sin((ChassisHPR.getX())*(pi/180)), 5)  , 
+                                ChassisPos.getY()  -  CamValues["XY"] * MiscFunctions.Truncate(self, cos((ChassisHPR.getX())*(pi/180)), 5)  , 
+                                ChassisPos.getZ()  -  MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+CamValues["Z"])
 
             self.camera.setHpr( ChassisHPR.getX(),
-                                ChassisHPR.getY()-7,
+                                ChassisHPR.getY()-CamValues["Angle"],
                                 ChassisHPR.getZ())
 
     class Rotate():
         def Update(self, angle):
             ChassisPos = self.ChassisNP.getPos()
             ChassisHPR = self.ChassisNP.getHpr()
+            CamValues = self.VehicleMetadata["Camera"]["Rotate"]
 
 
-            if self.Vehicle.getCurrentSpeedKmHour() < 100:
-                self.camera.setPos( ChassisPos.getX()  +  (8 + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+angle-self.CamOffset)*(pi/180)), 5)  ,
-                                    ChassisPos.getY()  -  (8 + (1*self.Vehicle.getCurrentSpeedKmHour()/100) + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+angle-self.CamOffset)*(pi/180)), 5)  ,
-                                    ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
-                )
-            else:
-                self.camera.setPos( ChassisPos.getX()  +  (9 + self.CrashOffset) * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+angle)*(pi/180)), 5)  , 
-                                    ChassisPos.getY()  -  (9 + self.CrashOffset) * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+angle)*(pi/180)), 5)  , 
-                                    ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+0.7
-                )
+            self.camera.setPos( ChassisPos.getX()  +  CamValues["XY"] * MiscFunctions.Truncate(self, sin((ChassisHPR.getX()+angle)*(pi/180)), 5)  ,
+                                ChassisPos.getY()  -  CamValues["XY"] * MiscFunctions.Truncate(self, cos((ChassisHPR.getX()+angle)*(pi/180)), 5)  ,
+                                ChassisPos.getZ()  -  2.5 * MiscFunctions.Truncate(self, sin(ChassisHPR.getY()*(pi/180)), 5)+CamValues["Z"])
 
-
-            self.camera.setHpr( ChassisHPR.getX()+angle-self.CamOffset ,
+            self.camera.setHpr( ChassisHPR.getX()+angle ,
                                 0 ,
                                 0)
 
