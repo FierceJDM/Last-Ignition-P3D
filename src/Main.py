@@ -5,6 +5,7 @@ from headers.Display import *
 from headers.Controls import *
 from headers.LoadObjects import *
 from headers.Camera import *
+import simplepbr
 
 
 
@@ -14,6 +15,7 @@ loadPrcFile("config_file.prc")
 class MainApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
+        simplepbr.init()
         self.disableMouse()
         self.NotifFont = loader.loadFont('../assets/media/Notificateur.ttf')
         slantfont = TextProperties()
@@ -21,7 +23,6 @@ class MainApp(ShowBase):
         textpropMgr = TextPropertiesManager.getGlobalPtr()
         textpropMgr.setProperties("slant", slantfont)
         self.EverythingNP = NodePath('Everything')
-        base.camLens.setFov(45)
         
         InitiateAllObjects(self)
 
