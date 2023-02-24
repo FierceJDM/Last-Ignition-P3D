@@ -77,28 +77,33 @@ def InitiateAllObjects(self):
 
     # ------ Heightfield Terrain :
     TerrainScale = [6, 6, 3]
-    TerrainPos = [0, 0, 0]
     self.BTerrainNP = self.EverythingNP.attachNewNode(BulletRigidBodyNode('Terrain'))
-    self.BTerrainNP.setPos(TerrainPos[0],
-                           TerrainPos[1],
-                           TerrainPos[2])
+    self.BTerrainNP.setPos(0, 0, 0)
     self.BTerrainNP.setScale(TerrainScale[0],
                              TerrainScale[1],
                              TerrainScale[2])
     self.BTerrainNP.node().addShape(BulletHeightfieldShape(PNMImage(Filename('../assets/media/output_COP301.png')), 10, ZUp))
     self.world.attachRigidBody(self.BTerrainNP.node())
+
     self.HeightfieldTex = self.loader.loadTexture("../assets/media/output_COP30.png")
     self.HeightfieldTex.wrap_u = SamplerState.WM_clamp
     self.HeightfieldTex.wrap_v = SamplerState.WM_clamp
     self.Terrain = ShaderTerrainMesh()
-    self.Terrain.heightfield = self.HeightfieldTex
-    self.Terrain.target_triangle_width = 10.0
-    self.Terrain.generate()
+    self.Terrain.set_heightfield(self.HeightfieldTex)
+    self.Terrain.set_target_triangle_width(10.0)
     self.TerrainNP = self.EverythingNP.attachNewNode(self.Terrain)
     self.TerrainNP.setScale(128*TerrainScale[0], 128*TerrainScale[1], 10*TerrainScale[2])          # 128 is .png's width and height
-    self.TerrainNP.setPos(-64*TerrainScale[0]+TerrainPos[0], -64*TerrainScale[1]+TerrainPos[1], -5*TerrainScale[2]+TerrainPos[2])
+    self.TerrainNP.setPos(-64*TerrainScale[0], -64*TerrainScale[1], -5*TerrainScale[2])
     self.TerrainNP.setShader(Shader.load(Shader.SL_GLSL, "../assets/media/terrain.vert.glsl", "../assets/media/terrain.frag.glsl"))
     self.TerrainNP.setShaderInput("camera", self.camera)
+    self.Terrain.generate()
+
+    tsss = TextureStage('tsss')
+    sand_tex = loader.load_texture("../assets/media/output_COP30.png")
+    sand_tex.setWrapU(Texture.WMBorderColor)
+    sand_tex.setWrapV(Texture.WMBorderColor)
+    self.TerrainNP.setTexture(tsss, sand_tex)
+    self.TerrainNP.setTexScale(tsss, 1, 1)
     # ------------------- Ground :
     self.Geometry = self.loader.loadModel("../assets/land/circuit.egg").findAllMatches('**/+GeomNode').getPath(0).node().getGeom(0)
     self.GroundMesh = BulletTriangleMesh()

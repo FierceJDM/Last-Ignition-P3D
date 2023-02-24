@@ -6,6 +6,7 @@
 in vec4 p3d_Vertex;
 uniform mat4 p3d_ModelViewProjectionMatrix;
 uniform mat4 p3d_ModelMatrix;
+uniform mat4 p3d_TextureMatrix;
 
 uniform struct {
   sampler2D data_texture;
@@ -42,12 +43,12 @@ void main() {
   chunk_position.xy += terrain_data.xy / float(ShaderTerrainMesh.terrain_size);
 
   // Compute the terrain UV coordinates
-  terrain_uv = chunk_position.xy;
+  terrain_uv = (p3d_TextureMatrix * vec4(chunk_position.xy, 0, 1)).xy;
 
   // Sample the heightfield and offset the terrain - we do not need to multiply
   // the height with anything since the terrain transform is included in the
   // model view projection matrix.
-  chunk_position.z += texture(ShaderTerrainMesh.heightfield, terrain_uv).x;
+  chunk_position.z += texture(ShaderTerrainMesh.heightfield, chunk_position.xy).x;
   gl_Position = p3d_ModelViewProjectionMatrix * vec4(chunk_position, 1);
 
   // Output the vertex world space position - in this case we use this to render
