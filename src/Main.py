@@ -63,15 +63,20 @@ app.run()
 
 # ------------------------- Tasks for v1.0.0 : ---------------------------------
 
-# TODO : Setup Entire Map
+# ---------------------- To Start -----------------------
+
 # TODO : Add Audio (Music, Car Sounds, ...)
 # TODO : Add Content (Goal : 10 cars, 10 songs)
 
-# ---------FINISH THE ONES BELOW BEFORE PROCEEDING TO THE ONES ABOVE----------
+# ------------------- Already Started -------------------
 
+# TODO : Finish Map Chunks loading
+# TODO : Setup Entire Map
 # TODO : Add UI and Menus (Menus, Video)
+# TODO : Setup Pipeline
 
-# ------------------------- Tasks for v1.1.0 : ------------------------------
+
+# ------------------------- Tasks for v1.1.0 : ---------------------------------
 
 # TODO : Add Garage, Customization System
 # TODO : Add Drift Physics

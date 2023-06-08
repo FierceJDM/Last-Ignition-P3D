@@ -2,8 +2,8 @@ from panda3d.core import *
 from .misc.Steering import *
 from .misc.MiscFunctions import *
 from .Display import *
+from .LoadObjects import *
 from .Camera import *
-import json
 
 InputMap = {
     "f1" : False,
@@ -62,7 +62,92 @@ class Controls():
     def Update(self):
         self.Width, self.Height = base.win.getXSize(), base.win.getYSize()
         
-        if base.mouseWatcherNode.hasMouse():
+
+
+
+
+
+
+
+
+        #-------------------------------TODO : Terrain Switch (WIP)------------------------------------------
+
+
+        
+        if 315 < round(self.ChassisNP.getPos().getY())%(128*6) < 453:
+
+            if round(self.ChassisNP.getPos().getY())%(128*6) <= 384 and self.TerrainsStatus != 1:
+
+                if self.Terrain2 != None and round(abs(self.ChassisNP.getPos().getY() - self.Terrain1.BTerrainNP.getPos().getY()))  >  round(abs(self.ChassisNP.getPos().getY() - self.Terrain2.BTerrainNP.getPos().getY())):
+                    # Replaces Terrain1 with Terrain2
+                    TempTerrain = self.Terrain1
+                    self.Terrain1 = self.Terrain2
+                    self.Terrain2 = TempTerrain
+                    self.TerrainsStatus = 1
+                elif self.Terrain2 != None and round(abs(self.ChassisNP.getPos().getY() - self.Terrain1.BTerrainNP.getPos().getY()))  ==  round(abs(self.ChassisNP.getPos().getY() - self.Terrain2.BTerrainNP.getPos().getY())):
+                    print("same distance")
+                else:
+                    # Creates Terrain2
+                    self.Terrain2 = NewTerrain('Terrain2', [0, self.Terrain1.BTerrainNP.getPos().getY()+768, 0], "../assets/media/output_COP30.png", "../assets/media/output_COP301.png", self.EverythingNP, self.world, self.loader, self.camera)
+                    self.TerrainsStatus = 1
+
+
+            elif round(self.ChassisNP.getPos().getY())%(128*6) > 384 and self.TerrainsStatus != 2:
+
+                if self.Terrain2 != None and round(abs(self.ChassisNP.getPos().getY() - self.Terrain1.BTerrainNP.getPos().getY()))  >  round(abs(self.ChassisNP.getPos().getY() - self.Terrain2.BTerrainNP.getPos().getY())):
+                    # Replaces Terrain1 with Terrain2
+                    TempTerrain = self.Terrain1
+                    self.Terrain1 = self.Terrain2
+                    self.Terrain2 = TempTerrain
+                    self.TerrainsStatus = 2
+                elif self.Terrain2 != None and round(abs(self.ChassisNP.getPos().getY() - self.Terrain1.BTerrainNP.getPos().getY()))  ==  round(abs(self.ChassisNP.getPos().getY() - self.Terrain2.BTerrainNP.getPos().getY())):
+                    print("same distance")
+                else:
+                    # Creates Terrain2
+                    self.Terrain2 = NewTerrain('Terrain2', [0, self.Terrain1.BTerrainNP.getPos().getY()-768, 0], "../assets/media/output_COP30.png", "../assets/media/output_COP301.png", self.EverythingNP, self.world, self.loader, self.camera)
+                    self.TerrainsStatus = 2
+
+
+        else:
+            self.TerrainsStatus = 0
+            if self.Terrain2 != None:
+                self.Terrain2.Unload(self.world)
+                self.Terrain2 = None
+
+        
+
+        #if X is in-between:
+            #if its here:
+                #do this
+            #if its there:
+                #do that
+        #else:
+            #idk
+
+
+
+
+        # TODO : Study Possible Conflict between Y and X Terrain Check
+
+
+
+
+
+        #-------------------------------     Terrain Switch (WIP)      ------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if base.mouseWatcherNode.hasMouse():    
             self.MouseX = (base.mouseWatcherNode.getMouseX()+1)*self.Width/2
             self.MouseY = (-base.mouseWatcherNode.getMouseY()+1)*self.Height/2
 
@@ -105,7 +190,7 @@ class Controls():
         if InputMap["r"]: # Respawn
             self.ChassisNP.node().setLinearVelocity(Point3(0, 0, 0))
             self.ChassisNP.node().setAngularVelocity(Point3(0, 0, 0))
-            self.ChassisNP.setPos(0, 200, 12)
+            self.ChassisNP.setPos(0, 300, 12)
             self.ChassisNP.setHpr(0, 0, 0)
             UpdateInputMap("r", False)
 

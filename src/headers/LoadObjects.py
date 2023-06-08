@@ -1,6 +1,106 @@
 from panda3d.core import *
 from panda3d.bullet import *
 import json
+from PIL import Image
+
+
+
+class NewTerrain():
+    def __init__(self, name, pos, mappath, map1pixelpath, everythingnp, world, loader, camera):
+        TerrainScale = [6, 6, 3]
+        self.BTerrainNP = everythingnp.attachNewNode(BulletRigidBodyNode(name))
+        self.BTerrainNP.setPos(pos[0],
+                               pos[1],
+                               pos[2])
+        self.BTerrainNP.setScale(TerrainScale[0],
+                                 TerrainScale[1],
+                                 TerrainScale[2])
+        self.BTerrainNP.node().addShape(BulletHeightfieldShape(PNMImage(Filename(map1pixelpath)), 10, ZUp))
+        world.attach(self.BTerrainNP.node())
+
+        self.HeightfieldTex = loader.loadTexture(mappath)
+        self.HeightfieldTex.wrap_u = SamplerState.WM_clamp
+        self.HeightfieldTex.wrap_v = SamplerState.WM_clamp
+        self.Terrain = ShaderTerrainMesh()
+        self.Terrain.setChunkSize(32)
+        self.Terrain.set_heightfield(self.HeightfieldTex)
+        self.Terrain.set_target_triangle_width(10.0)
+        self.TerrainNP = everythingnp.attachNewNode(self.Terrain)
+        self.TerrainNP.setScale(128*TerrainScale[0], 128*TerrainScale[1], 10*TerrainScale[2])          # 128 is .png's width and height
+        self.TerrainNP.setPos(-64*TerrainScale[0]+pos[0], -64*TerrainScale[1]+pos[1], -5*TerrainScale[2]+pos[2])
+        self.TerrainNP.setShader(Shader.load(Shader.SL_GLSL, "../assets/media/terrain.vert.glsl", "../assets/media/terrain.frag.glsl"))
+        self.TerrainNP.setShaderInput("camera", camera)
+        self.Terrain.generate()
+
+
+
+
+
+
+
+
+
+
+
+
+        #-------------------------------TODO : Texture Generation (WIP)------------------------------------------
+
+        #-------- Make Texture --------
+
+        TexChart = Image.open(mappath) #Change this
+        RealTex = Image.new(mode="RGB", size=(128*TerrainScale[0], 128*TerrainScale[1]))
+        Tile1 = Image.open("../assets/media/Tiles/Tile1.png")
+        #Open all tiles of 16*16
+        for x in range(128):
+            for y in range(128):
+                if TexChart.getpixel((x, y)) == (99, 99, 99, 255):
+                    for x2 in range(6):
+                        for y2 in range(6):
+                            pix = Tile1.getpixel((x2, y2))
+                            RealTex.putpixel((6*x+x2, 6*y+y2) ,(pix))
+                #elif TexChart.getpixel((x, y)) == (255, 0, 0, 255):
+                    #print tile for red
+
+        RealTex.save("../assets/media/F.png")
+        #close everything else
+
+
+        #-------- Load Texture --------
+
+        tsss = TextureStage('tsss')
+        sand_tex = loader.load_texture("../assets/media/F.png")
+        sand_tex.setWrapU(Texture.WMBorderColor)
+        sand_tex.setWrapV(Texture.WMBorderColor)
+        self.TerrainNP.setTexture(tsss, sand_tex)
+        self.TerrainNP.setTexScale(tsss, 1, 1)
+
+
+        #-------------------------------      Texture Generation (WIP)     ------------------------------------------
+
+
+
+
+
+
+    def Unload(self, world):
+        world.remove(self.BTerrainNP.node())
+        self.BTerrainNP.removeNode()
+        self.TerrainNP.detachNode()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def InitiateAllObjects(self):
     # ---------------------------- Setup Debug Mode ------------------------------
@@ -35,10 +135,10 @@ def InitiateAllObjects(self):
     self.ChassisNP.node().setMass(1500.0)
     self.ChassisNP.node().setDeactivationEnabled(False)
     self.loader.loadModel('../assets/cars/nissan/nissan.egg').reparentTo(self.ChassisNP)
-    self.world.attachRigidBody(self.ChassisNP.node())
+    self.world.attach(self.ChassisNP.node())
     self.Vehicle = BulletVehicle(self.world, self.ChassisNP.node())
     self.Vehicle.setCoordinateSystem(ZUp)
-    self.world.attachVehicle(self.Vehicle)
+    self.world.attach(self.Vehicle)
     self.WheelsList = {
         'Wheel1NP' : None,
         'Wheel2NP' : None, 
@@ -75,46 +175,13 @@ def InitiateAllObjects(self):
         self.WheelsList[i+4].setFrictionSlip(100)
         self.WheelsList[i+4].setRollInfluence(0.1)
 
-    # ------ Heightfield Terrain :
-    TerrainScale = [6, 6, 3]
-    self.BTerrainNP = self.EverythingNP.attachNewNode(BulletRigidBodyNode('Terrain'))
-    self.BTerrainNP.setPos(0, 0, 0)
-    self.BTerrainNP.setScale(TerrainScale[0],
-                             TerrainScale[1],
-                             TerrainScale[2])
-    self.BTerrainNP.node().addShape(BulletHeightfieldShape(PNMImage(Filename('../assets/media/output_COP301.png')), 10, ZUp))
-    self.world.attachRigidBody(self.BTerrainNP.node())
 
-    self.HeightfieldTex = self.loader.loadTexture("../assets/media/output_COP30.png")
-    self.HeightfieldTex.wrap_u = SamplerState.WM_clamp
-    self.HeightfieldTex.wrap_v = SamplerState.WM_clamp
-    self.Terrain = ShaderTerrainMesh()
-    self.Terrain.set_heightfield(self.HeightfieldTex)
-    self.Terrain.set_target_triangle_width(10.0)
-    self.TerrainNP = self.EverythingNP.attachNewNode(self.Terrain)
-    self.TerrainNP.setScale(128*TerrainScale[0], 128*TerrainScale[1], 10*TerrainScale[2])          # 128 is .png's width and height
-    self.TerrainNP.setPos(-64*TerrainScale[0], -64*TerrainScale[1], -5*TerrainScale[2])
-    self.TerrainNP.setShader(Shader.load(Shader.SL_GLSL, "../assets/media/terrain.vert.glsl", "../assets/media/terrain.frag.glsl"))
-    self.TerrainNP.setShaderInput("camera", self.camera)
-    self.Terrain.generate()
+    # ------------------- Terrain :
+    self.TerrainsStatus = 0
+    self.Terrain2 = None
+    self.Terrain1 = NewTerrain('Terrain1', [0, 0, 0], "../assets/media/output_COP30.png", "../assets/media/output_COP301.png", self.EverythingNP, self.world, self.loader, self.camera)
 
-    tsss = TextureStage('tsss')
-    sand_tex = loader.load_texture("../assets/media/output_COP30.png")
-    sand_tex.setWrapU(Texture.WMBorderColor)
-    sand_tex.setWrapV(Texture.WMBorderColor)
-    self.TerrainNP.setTexture(tsss, sand_tex)
-    self.TerrainNP.setTexScale(tsss, 1, 1)
-    # ------------------- Ground :
-    self.Geometry = self.loader.loadModel("../assets/land/circuit.egg").findAllMatches('**/+GeomNode').getPath(0).node().getGeom(0)
-    self.GroundMesh = BulletTriangleMesh()
-    self.GroundMesh.addGeom(self.Geometry)
-    self.GroundNP = self.EverythingNP.attachNewNode(BulletRigidBodyNode('Ground'))
-    self.GroundNP.setPos(0, 0, -1)
-    self.GroundNP.setCollideMask(BitMask32.allOn())
-    self.GroundNP.setScale(5, 5, 5)
-    self.GroundNP.node().addShape(BulletTriangleMeshShape(self.GroundMesh, dynamic=False))
-    self.loader.loadModel("../assets/land/circuit.egg").reparentTo(self.GroundNP)
-    self.world.attachRigidBody(self.GroundNP.node())
+
     # ------------------------------Set Lighting----------------------------------
     self.SunLight = DirectionalLight('Sun')
     self.SunLight.setColor((.8, .8, .8, 1))
